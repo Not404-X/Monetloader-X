@@ -1,0 +1,271 @@
+<!DOCTYPE html><html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MONETLOADER-X</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&amp;display=swap" rel="stylesheet"><style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Orbitron',sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+
+body{
+  background: radial-gradient(circle at top,#ede9fe,#ffffff);
+  color:#1e1b4b;
+  overflow-x:hidden;
+}
+
+canvas{
+  position:fixed;
+  top:0;
+  left:0;
+  z-index:-1;
+}
+
+/* SPLASH SCREEN */
+.splash{
+  position:fixed;
+  inset:0;
+  background:linear-gradient(135deg,#6d28d9,#a78bfa);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  flex-direction:column;
+  z-index:100;
+  color:white;
+  animation:fadeOut 1.2s ease forwards;
+  animation-delay:2s;
+}
+
+.splash h1{font-size:26px;letter-spacing:3px}
+
+@keyframes fadeOut{
+  to{opacity:0;visibility:hidden}
+}
+
+/* TOP BAR */
+.topbar{
+  position:fixed;
+  top:10px;
+  left:50%;
+  transform:translateX(-50%);
+  width:92%;
+  max-width:520px;
+  display:flex;
+  gap:10px;
+  align-items:center;
+  padding:10px 12px;
+  border-radius:999px;
+  background:rgba(255,255,255,0.7);
+  backdrop-filter:blur(18px);
+  box-shadow:0 10px 35px rgba(109,40,217,0.15);
+  z-index:20;
+}
+
+.topbar-title{
+  font-size:12px;
+  color:#5b21b6;
+  white-space:nowrap;
+}
+
+.topbar input{
+  flex:1;
+  border:none;
+  outline:none;
+  background:transparent;
+  font-size:12px;
+}
+
+/* CATEGORY BAR (UPDATED: 2 ONLY) */
+.categories{
+  margin-top:55px;
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  flex-wrap:wrap;
+  padding:6px;
+}
+
+.cat{
+  padding:6px 14px;
+  background:rgba(255,255,255,0.6);
+  border-radius:999px;
+  font-size:11px;
+  cursor:pointer;
+}
+
+.cat:hover{
+  background:#a78bfa;
+  color:white;
+}
+
+/* GRID (REDUCED GAP TOP) */
+.container{
+  max-width:1100px;
+  margin:10px auto 60px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:16px;
+  padding:15px;
+}
+
+/* CARD */
+.card{
+  background:rgba(255,255,255,0.85);
+  border-radius:18px;
+  overflow:hidden;
+  box-shadow:0 10px 30px rgba(0,0,0,0.05);
+  opacity:0;
+  transform:translateY(20px);
+  transition:0.5s ease;
+}
+
+.card.show{
+  opacity:1;
+  transform:translateY(0);
+}
+
+.card img{
+  width:100%;
+  aspect-ratio:16/9;
+  height:auto;
+  object-fit:cover;
+  object-position:center;
+  display:block;
+}
+
+.card-content{padding:14px}
+
+.card h3{font-size:14px;margin-bottom:5px}
+.card p{font-size:11px;color:#6b7280;margin-bottom:10px}
+
+.btn{
+  display:block;
+  text-align:center;
+  padding:10px;
+  border-radius:12px;
+  background:linear-gradient(90deg,#6d28d9,#a78bfa);
+  color:white;
+  text-decoration:none;
+  font-size:12px;
+}
+
+.btn:hover{transform:scale(1.03)}
+
+/* REVIEW BUTTON */
+.review-btn{
+  display:block;
+  text-align:center;
+  padding:10px;
+  border-radius:12px;
+  background:rgba(255,255,255,0.8);
+  color:#5b21b6;
+  text-decoration:none;
+  font-size:12px;
+  margin-top:8px;
+  border:1px solid rgba(109,40,217,0.2);
+}
+.review-btn:hover{
+  background:#ede9fe;
+}
+
+</style></head>
+<body><!-- SPLASH --><div class="splash">
+  <h1>MONETLOADER-X</h1>
+  <p>SA-MP xNot404</p>
+</div><canvas id="bg"></canvas>
+
+<!-- TOP BAR --><div class="topbar">
+  <div class="topbar-title">MONETLOADER-X</div>
+  <input id="search" placeholder="Search scripts...">
+</div><!-- CATEGORY (ONLY 2) --><div class="categories">
+  <div class="cat" data-cat="cheat">Cheat</div>
+  <div class="cat" data-cat="roleplay">Roleplay</div>
+</div><!-- CONTENT --><div class="container"><div class="card" data-name="aimbot" data-cat="cheat">
+  <img src="https://img.youtube.com/vi/YGAZMgOmMoE/0.jpg">
+  <div class="card-content">
+    <h3>AIMBOT PRO</h3>
+    <p>Auto aim precision system</p>
+    <a href="#" class="btn">UNDUH SCRIPT</a>
+    <a href="https://youtu.be/YGAZMgOmMoE" target="_blank" class="review-btn">REVIEW YOUTUBE</a>
+  </div>
+</div><div class="card" data-name="esp" data-cat="cheat">
+  <img src="https://via.placeholder.com/400x200">
+  <div class="card-content">
+    <h3>ESP WALLHACK</h3>
+    <p>See enemy through walls</p>
+    <a href="#" class="btn">UNDUH SCRIPT</a>
+  </div>
+</div><div class="card" data-name="roleplay" data-cat="roleplay">
+  <img src="https://via.placeholder.com/400x200">
+  <div class="card-content">
+    <h3>RP SCRIPT</h3>
+    <p>Roleplay enhancement tools</p>
+    <a href="#" class="btn">UNDUH SCRIPT</a>
+  </div>
+</div></div><script>
+// SPLASH
+setTimeout(()=>{
+  document.querySelector('.splash').style.display='none';
+},2000);
+
+// SEARCH
+const search=document.getElementById('search');
+const cards=document.querySelectorAll('.card');
+
+search.addEventListener('input',()=>{
+  let v=search.value.toLowerCase();
+  cards.forEach(c=>{
+    c.style.display=c.dataset.name.includes(v)?'block':'none';
+  });
+});
+
+// CATEGORY FILTER
+const cats=document.querySelectorAll('.cat');
+cats.forEach(c=>{
+  c.addEventListener('click',()=>{
+    let f=c.dataset.cat;
+    cards.forEach(card=>{
+      card.style.display=card.dataset.cat===f?'block':'none';
+    });
+  });
+});
+
+// ANIMATION
+const obs=new IntersectionObserver(e=>{
+  e.forEach(en=>{
+    if(en.isIntersecting) en.target.classList.add('show');
+  });
+},{threshold:0.1});
+
+document.querySelectorAll('.card').forEach(c=>obs.observe(c));
+
+// LIGHT PARTICLES
+const canvas=document.getElementById('bg');
+const ctx=canvas.getContext('2d');
+canvas.width=innerWidth;
+canvas.height=innerHeight;
+
+let p=[];
+for(let i=0;i<25;i++){
+  p.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:2,dx:(Math.random()-0.5)*0.3,dy:(Math.random()-0.5)*0.3});
+}
+
+function anim(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  p.forEach(pt=>{
+    ctx.beginPath();
+    ctx.arc(pt.x,pt.y,pt.r,0,Math.PI*2);
+    ctx.fillStyle='rgba(167,139,250,0.5)';
+    ctx.fill();
+    pt.x+=pt.dx;
+    pt.y+=pt.dy;
+  });
+  requestAnimationFrame(anim);
+}
+anim();
+</script></body>
+</html>
