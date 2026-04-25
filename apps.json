@@ -1,10 +1,11 @@
 {
   "x64": [
     {
-      "name": "Client X64 v1",
-      "desc": "Versi stabil",
-      "file": "x64-v1.apk",
-      "review": "https://link-review-x64.com"
+      "name": "Damage Informer (all client)",
+      "desc": "Tampilkan nama target, Tampilkan HP (warna pink), Tampilkan Armor (warna putih), HP & Armor aman (0–100), Teks ber-outline supaya terbaca, Ringan & stabil. *Toggle / Command* /xdmg → ON / OFF UI target",
+      "file": "https://sfl.gl/rv3iV",
+      "review": "https://youtu.be/eAUKTbpQTf4?si=5BHAlpN-_Yb2hjVA",
+      "password": "https://sfl.gl/4zVgBnU"
     }
   ],
   "x32": [
