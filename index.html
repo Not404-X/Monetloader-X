@@ -1,271 +1,489 @@
-<!DOCTYPE html><html lang="id">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MONETLOADER-X</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&amp;display=swap" rel="stylesheet"><style>
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-  font-family:'Orbitron',sans-serif;
-  -webkit-font-smoothing:antialiased;
-}
+<!doctype html>
+<html lang="id">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>SA-MP xNot404</title>
 
-body{
-  background: radial-gradient(circle at top,#ede9fe,#ffffff);
-  color:#1e1b4b;
-  overflow-x:hidden;
-}
+        <link
+            href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&ampdisplay=swap"
+            rel="stylesheet"
+        />
 
-canvas{
-  position:fixed;
-  top:0;
-  left:0;
-  z-index:-1;
-}
+        <style>
+            body {
+                margin: 0;
+                font-family: "Poppins", sans-serif;
+                background: linear-gradient(135deg, #121212, #1f1f2e, #262635);
+                color: white;
+            }
 
-/* SPLASH SCREEN */
-.splash{
-  position:fixed;
-  inset:0;
-  background:linear-gradient(135deg,#6d28d9,#a78bfa);
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  flex-direction:column;
-  z-index:100;
-  color:white;
-  animation:fadeOut 1.2s ease forwards;
-  animation-delay:2s;
-}
+            /* CONTAINER */
+            .container {
+                max-width: 400px;
+                margin: auto;
+                padding: 20px;
+            }
 
-.splash h1{font-size:26px;letter-spacing:3px}
+            /* HEADER */
+            .header {
+                text-align: center;
+                margin-bottom: 30px;
+            }
 
-@keyframes fadeOut{
-  to{opacity:0;visibility:hidden}
-}
+            .header h1 {
+                font-size: 22px;
+                margin: 0;
+            }
 
-/* TOP BAR */
-.topbar{
-  position:fixed;
-  top:10px;
-  left:50%;
-  transform:translateX(-50%);
-  width:92%;
-  max-width:520px;
-  display:flex;
-  gap:10px;
-  align-items:center;
-  padding:10px 12px;
-  border-radius:999px;
-  background:rgba(255,255,255,0.7);
-  backdrop-filter:blur(18px);
-  box-shadow:0 10px 35px rgba(109,40,217,0.15);
-  z-index:20;
-}
+            .header p {
+                color: #aaa;
+                margin: 5px 0;
+            }
 
-.topbar-title{
-  font-size:12px;
-  color:#5b21b6;
-  white-space:nowrap;
-}
+            /* ICON */
+            .social {
+                margin-top: 10px;
+            }
 
-.topbar input{
-  flex:1;
-  border:none;
-  outline:none;
-  background:transparent;
-  font-size:12px;
-}
+            .social img {
+                margin: 0 6px;
+            }
 
-/* CATEGORY BAR (UPDATED: 2 ONLY) */
-.categories{
-  margin-top:55px;
-  display:flex;
-  justify-content:center;
-  gap:10px;
-  flex-wrap:wrap;
-  padding:6px;
-}
+            /* BOX */
+            .box {
+                background: rgba(40, 40, 60, 0.4);
+                border-radius: 16px;
+                padding: 16px;
+                margin-bottom: 16px;
+                border: 1px solid rgba(255, 255, 255, 0.08);
+            }
 
-.cat{
-  padding:6px 14px;
-  background:rgba(255,255,255,0.6);
-  border-radius:999px;
-  font-size:11px;
-  cursor:pointer;
-}
+            /* TEXT */
+            .title {
+                font-weight: 600;
+                margin-bottom: 6px;
+            }
 
-.cat:hover{
-  background:#a78bfa;
-  color:white;
-}
+            .desc {
+                font-size: 13px;
+                color: #ccc;
+            }
 
-/* GRID (REDUCED GAP TOP) */
-.container{
-  max-width:1100px;
-  margin:10px auto 60px;
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-  gap:16px;
-  padding:15px;
-}
+            /* BUTTON */
+            .btn {
+                margin-top: 10px;
+                display: inline-block;
+                background: #e5e5e5;
+                color: black;
+                padding: 8px 14px;
+                border-radius: 20px;
+                font-size: 13px;
+                font-weight: 600;
+            }
 
-/* CARD */
-.card{
-  background:rgba(255,255,255,0.85);
-  border-radius:18px;
-  overflow:hidden;
-  box-shadow:0 10px 30px rgba(0,0,0,0.05);
-  opacity:0;
-  transform:translateY(20px);
-  transition:0.5s ease;
-}
+            /* INFO */
+            .info {
+                background: rgba(255, 255, 255, 0.05);
+                padding: 14px;
+                border-radius: 12px;
+                margin-bottom: 20px;
+                font-size: 13px;
+            }
 
-.card.show{
-  opacity:1;
-  transform:translateY(0);
-}
+            /* HIDDEN */
+            .hidden {
+                display: none;
+            }
 
-.card img{
-  width:100%;
-  aspect-ratio:16/9;
-  height:auto;
-  object-fit:cover;
-  object-position:center;
-  display:block;
-}
+            .topbar {
+                position: sticky;
+                top: 0;
+                z-index: 999;
 
-.card-content{padding:14px}
+                padding: 12px 10px;
+            }
 
-.card h3{font-size:14px;margin-bottom:5px}
-.card p{font-size:11px;color:#6b7280;margin-bottom:10px}
+            .back-btn {
+                display: inline-block;
+                font-size: 14px;
+                color: #fff;
 
-.btn{
-  display:block;
-  text-align:center;
-  padding:10px;
-  border-radius:12px;
-  background:linear-gradient(90deg,#6d28d9,#a78bfa);
-  color:white;
-  text-decoration:none;
-  font-size:12px;
-}
+                background: rgba(255, 255, 255, 0.08);
+                padding: 6px 12px;
+                border-radius: 10px;
 
-.btn:hover{transform:scale(1.03)}
+                cursor: pointer;
+                transition: 0.2s;
+            }
 
-/* REVIEW BUTTON */
-.review-btn{
-  display:block;
-  text-align:center;
-  padding:10px;
-  border-radius:12px;
-  background:rgba(255,255,255,0.8);
-  color:#5b21b6;
-  text-decoration:none;
-  font-size:12px;
-  margin-top:8px;
-  border:1px solid rgba(109,40,217,0.2);
-}
-.review-btn:hover{
-  background:#ede9fe;
-}
+            .back-btn:hover {
+                background: rgba(255, 255, 255, 0.18);
+            }
 
-</style></head>
-<body><!-- SPLASH --><div class="splash">
-  <h1>MONETLOADER-X</h1>
-  <p>SA-MP xNot404</p>
-</div><canvas id="bg"></canvas>
+            .review-btn {
+                margin-top: 8px;
+                background: rgba(0, 200, 255, 0.15);
+                color: #00d9ff;
+            }
 
-<!-- TOP BAR --><div class="topbar">
-  <div class="topbar-title">MONETLOADER-X</div>
-  <input id="search" placeholder="Search scripts...">
-</div><!-- CATEGORY (ONLY 2) --><div class="categories">
-  <div class="cat" data-cat="cheat">Cheat</div>
-  <div class="cat" data-cat="roleplay">Roleplay</div>
-</div><!-- CONTENT --><div class="container"><div class="card" data-name="aimbot" data-cat="cheat">
-  <img src="https://img.youtube.com/vi/YGAZMgOmMoE/0.jpg">
-  <div class="card-content">
-    <h3>AIMBOT PRO</h3>
-    <p>Auto aim precision system</p>
-    <a href="#" class="btn">UNDUH SCRIPT</a>
-    <a href="https://youtu.be/YGAZMgOmMoE" target="_blank" class="review-btn">REVIEW YOUTUBE</a>
-  </div>
-</div><div class="card" data-name="esp" data-cat="cheat">
-  <img src="https://via.placeholder.com/400x200">
-  <div class="card-content">
-    <h3>ESP WALLHACK</h3>
-    <p>See enemy through walls</p>
-    <a href="#" class="btn">UNDUH SCRIPT</a>
-  </div>
-</div><div class="card" data-name="roleplay" data-cat="roleplay">
-  <img src="https://via.placeholder.com/400x200">
-  <div class="card-content">
-    <h3>RP SCRIPT</h3>
-    <p>Roleplay enhancement tools</p>
-    <a href="#" class="btn">UNDUH SCRIPT</a>
-  </div>
-</div></div><script>
-// SPLASH
-setTimeout(()=>{
-  document.querySelector('.splash').style.display='none';
-},2000);
+            .social {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 1px; /* 🔥 ini jarak antar icon */
+                margin-top: 1px;
+            }
 
-// SEARCH
-const search=document.getElementById('search');
-const cards=document.querySelectorAll('.card');
+            .social a img {
+                width: 22px;
+                height: 22px;
+                margin: 0 3px;
+            }
 
-search.addEventListener('input',()=>{
-  let v=search.value.toLowerCase();
-  cards.forEach(c=>{
-    c.style.display=c.dataset.name.includes(v)?'block':'none';
-  });
-});
+            .splash {
+                position: fixed;
+                inset: 0;
+                background: linear-gradient(135deg, #121212, #1f1f2e, #262635);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                flex-direction: column; /* 🔥 penting */
+                z-index: 9999;
+                color: white;
+            }
 
-// CATEGORY FILTER
-const cats=document.querySelectorAll('.cat');
-cats.forEach(c=>{
-  c.addEventListener('click',()=>{
-    let f=c.dataset.cat;
-    cards.forEach(card=>{
-      card.style.display=card.dataset.cat===f?'block':'none';
-    });
-  });
-});
+            .splash-box {
+                text-align: center;
+                animation: zoomIn 0.6s ease;
+            }
 
-// ANIMATION
-const obs=new IntersectionObserver(e=>{
-  e.forEach(en=>{
-    if(en.isIntersecting) en.target.classList.add('show');
-  });
-},{threshold:0.1});
+            .splash h1 {
+                font-size: 20px;
+                margin-bottom: 8px;
+            }
 
-document.querySelectorAll('.card').forEach(c=>obs.observe(c));
+            .splash-loading {
+                margin-top: 20px; /* 🔥 bikin turun ke bawah */
+                font-size: 12px;
+                color: #aaa;
+                letter-spacing: 1px;
+            }
 
-// LIGHT PARTICLES
-const canvas=document.getElementById('bg');
-const ctx=canvas.getContext('2d');
-canvas.width=innerWidth;
-canvas.height=innerHeight;
+            @keyframes zoomIn {
+                from {
+                    transform: scale(0.8);
+                    opacity: 0;
+                }
+                to {
+                    transform: scale(1);
+                    opacity: 1;
+                }
+            }
 
-let p=[];
-for(let i=0;i<25;i++){
-  p.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:2,dx:(Math.random()-0.5)*0.3,dy:(Math.random()-0.5)*0.3});
-}
+            .splash.hide {
+                animation: fadeOut 0.8s ease forwards;
+                animation-delay: 1.5s;
+            }
 
-function anim(){
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  p.forEach(pt=>{
-    ctx.beginPath();
-    ctx.arc(pt.x,pt.y,pt.r,0,Math.PI*2);
-    ctx.fillStyle='rgba(167,139,250,0.5)';
-    ctx.fill();
-    pt.x+=pt.dx;
-    pt.y+=pt.dy;
-  });
-  requestAnimationFrame(anim);
-}
-anim();
-</script></body>
+            .loading-bar {
+                width: 200px;
+                height: 6px;
+                background: rgba(255, 255, 255, 0.15);
+                border-radius: 50px;
+                margin-top: 15px;
+                overflow: hidden;
+            }
+
+            .loading-progress {
+                height: 100%;
+                width: 0%;
+                background: linear-gradient(90deg, #6d28d9, #a78bfa);
+                border-radius: 50px;
+                transition: width 0.2s ease;
+            }
+
+            @keyframes fadeOut {
+                to {
+                    opacity: 0;
+                    visibility: hidden;
+                }
+            }
+            .download-btn,
+            .password-btn,
+            .icon-btn {
+                width: 40px;
+                height: 40px;
+
+                padding: 0;
+
+                display: flex;
+                align-items: center;
+                justify-content: center;
+
+                border-radius: 50%;
+
+                font-size: 16px;
+
+                flex-shrink: 0;
+                cursor: pointer;
+
+                transition: 0.2s;
+            }
+
+            /* HOVER EFEK */
+            .download-btn:hover,
+            .password-btn:hover,
+            .icon-btn:hover {
+                transform: scale(1.05);
+            }
+            .btn-row {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-top: 10px;
+            }
+
+            .left-btns {
+                display: flex;
+                gap: 8px;
+                align-items: center;
+            }
+            #search {
+                flex: 1;
+
+                padding: 8px 12px;
+                border-radius: 10px;
+
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                outline: none;
+
+                background: rgba(255, 255, 255, 0.06);
+                color: #fff;
+
+                font-size: 13px;
+
+                transition: 0.2s;
+            }
+
+            /* placeholder */
+            #search::placeholder {
+                color: rgba(255, 255, 255, 0.4);
+            }
+
+            /* saat fokus */
+            #search:focus {
+                background: rgba(255, 255, 255, 0.12);
+                border-color: rgba(168, 139, 250, 0.5);
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="splash">
+            <h1>SAMPxNot404 🜲</h1>
+
+            <div class="loading-bar">
+                <div class="loading-progress" id="loadingProgress"></div>
+            </div>
+
+            <div class="splash-loading">Loading<span id="dots"></span></div>
+        </div>
+
+        <div id="home" class="container">
+            <div class="header">
+                <h1>Monet xNot404 🜲</h1>
+                <p>About-x</p>
+
+                <div class="social">
+                    <a href="https://discord.gg/c74ApQxxCd"
+                        ><img
+                            src="https://img.icons8.com/ios-filled/26/ffffff/discord-logo.png"
+                    /></a>
+                    <a href="https://www.youtube.com/@xNot404"
+                        ><img
+                            src="https://img.icons8.com/ios-filled/26/ffffff/youtube-play.png"
+                    /></a>
+                    <a
+                        href="https://www.tiktok.com/@.userfaka?_t=ZS-8xYkqhwim1q&_r=1"
+                        ><img
+                            src="https://img.icons8.com/ios-filled/26/ffffff/tiktok--v1.png"
+                            alt="TikTok"
+                    /></a>
+                    <a href="https://saweria.co/SupportxNot404"
+                        ><img
+                            src="https://img.icons8.com/ios-filled/26/ffffff/money--v1.png"
+                            alt="Donasi"
+                    /></a>
+                </div>
+            </div>
+
+            <div class="info">
+                Selamat datang di <b>SAMPxNot404</b> — monet SAMP yang
+                di build langsung dan terjamin keamanan dari keyloger.<br /><br />
+                <span style="color: #22c55e">
+                    ⚡ Nggak perlu ragu atau takut — semua file di sini 100%
+                    aman, bebas virus, dan langsung siap kamu pakai tanpa ribet!
+                </span>
+            </div>
+
+            <div class="box">
+                <div class="title">MONET RP</div>
+                <div class="desc">
+                    Script Roleplay<br />
+                    <b>SAMPxNot404 🜲</b>
+                </div>
+                <div class="btn" onclick="showDownload('x64')">Monet RP</div>
+            </div>
+
+            <div class="box">
+                <div class="title">MONET-X</div>
+                <div class="desc">
+                    Script Hitam<br />
+                    <b>SAMPxNot404 🜲</b>
+                </div>
+                <div class="btn" onclick="showDownload('x32')">Monet-X</div>
+            </div>
+        </div>
+
+        <!-- DOWNLOAD PAGE -->
+        <div id="download" class="container hidden">
+            <div class="topbar">
+                <div class="back-btn" onclick="showHome()">←</div>
+
+                <input type="text" id="search" placeholder="Cari aplikasi..." />
+            </div>
+
+            <!-- INI SATU-SATUNYA CONTAINER -->
+            <div id="downloadBox"></div>
+        </div>
+
+        <script>
+            window.onerror = function (msg, url, line) {
+                console.log("JS ERROR:", msg, line);
+                return false;
+            };
+
+            let apps = {};
+
+            async function loadApps() {
+                try {
+                    const res = await fetch(
+                        "https://raw.githubusercontent.com/Not404-X/Client-X/main/apps.json"
+                    );
+                    apps = await res.json();
+                    console.log("Apps loaded:", apps);
+                } catch (e) {
+                    console.log("Gagal load JSON:", e);
+                }
+            }
+
+            async function showDownload(type) {
+                document.getElementById("home").style.display = "none";
+                document.getElementById("download").style.display = "block";
+
+                if (!apps || !apps[type]) {
+                    await loadApps();
+                }
+
+                if (!apps || !apps[type]) {
+                    document.getElementById("downloadBox").innerHTML = `
+            <div class="box" data-name="${app.name.toLowerCase()}">
+                <div class="title">Error</div>
+                <div class="desc">Data tidak ditemukan / JSON gagal load</div>
+            </div>
+        `;
+                    return;
+                }
+
+                let html = "";
+
+                apps[type].forEach(app => {
+                    html += `
+    <div class="box">
+        <div class="title">${app.name}</div>
+        <div class="desc">${app.desc}</div>
+
+        <div class="btn-row">
+            <div class="left-btns">
+                <a href="${app.file}" class="btn download-btn">⬇</a>
+                <div class="btn password-btn" onclick="window.open('${app.password}','_blank')">🔐</div>
+            </div>
+
+            <div class="review-btn icon-btn" onclick="window.open('${app.review}','_blank')">
+                >
+            </div>
+        </div>
+    </div>
+`;
+                });
+                const search = document.getElementById("search");
+
+                search.addEventListener("input", () => {
+                    let v = search.value.toLowerCase();
+                    let cards = document.querySelectorAll("#downloadBox .box");
+
+                    cards.forEach(c => {
+                        let name = c.dataset.name;
+
+                        c.style.display = name.includes(v) ? "block" : "none";
+                    });
+                });
+
+                document.getElementById("downloadBox").innerHTML = html;
+            }
+
+            function showHome() {
+                document.getElementById("download").style.display = "none";
+                document.getElementById("home").style.display = "block";
+            }
+
+            function openReview(link) {
+                window.open(link, "_blank");
+            }
+
+            let progress = 0;
+
+            const fakeAssets = [
+                "https://img.icons8.com/ios-filled/26/ffffff/discord-logo.png",
+                "https://img.icons8.com/ios-filled/26/ffffff/youtube-play.png",
+                "https://img.icons8.com/ios-filled/26/ffffff/tiktok--v1.png"
+            ];
+
+            let loaded = 0;
+
+            function updateBar() {
+                let percent = Math.floor((loaded / fakeAssets.length) * 100);
+                document.getElementById("loadingProgress").style.width =
+                    percent + "%";
+            }
+
+            function loadFake(src) {
+                return new Promise(res => {
+                    let img = new Image();
+                    img.src = src;
+                    img.onload = res;
+                    img.onerror = res;
+                });
+            }
+
+            async function startSplash() {
+                for (let i = 0; i < fakeAssets.length; i++) {
+                    await loadFake(fakeAssets[i]);
+                    loaded++;
+                    updateBar();
+
+                    await new Promise(r => setTimeout(r, 300)); // ⬅️ ini delay per step
+                }
+
+                setTimeout(() => {
+                    document.querySelector(".splash")?.remove();
+                }, 800);
+            }
+
+            loadApps();
+
+            startSplash();
+        </script>
+    </body>
 </html>
