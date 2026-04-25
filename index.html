@@ -490,8 +490,12 @@
                 }
 
                 setTimeout(() => {
-                    document.querySelector(".splash")?.remove();
-                }, 800);
+    const splash = document.querySelector(".splash");
+    if (splash) {
+        splash.style.display = "none";
+        splash.style.pointerEvents = "none";
+    }
+}, 800);
             }
 
             loadApps();
