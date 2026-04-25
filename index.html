@@ -514,12 +514,15 @@
                 }
 
                 setTimeout(() => {
-                    const splash = document.querySelector(".splash");
-                    if (splash) {
-                        splash.style.display = "none";
-                        splash.style.pointerEvents = "none";
-                    }
-                }, 800);
+    const splash = document.querySelector(".splash");
+    if (splash) {
+        splash.classList.add("hide"); // 🔥 jalanin animasi dulu
+
+        setTimeout(() => {
+            splash.style.display = "none"; // baru hilang total
+        }, 800);
+    }
+}, 800);
             }
 
             loadApps();
