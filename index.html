@@ -392,14 +392,14 @@
                 }
 
                 if (!apps || !apps[type]) {
-                    document.getElementById("downloadBox").innerHTML = `
-            <div class="box" data-name="${app.name.toLowerCase()}">
-                <div class="title">Error</div>
-                <div class="desc">Data tidak ditemukan / JSON gagal load</div>
-            </div>
-        `;
-                    return;
-                }
+    document.getElementById("downloadBox").innerHTML = `
+        <div class="box">
+            <div class="title">Error</div>
+            <div class="desc">Data tidak ditemukan / JSON gagal load</div>
+        </div>
+    `;
+    return;
+}
 
                 let html = "";
 
