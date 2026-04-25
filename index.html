@@ -400,21 +400,26 @@
 
                 apps[type].forEach(app => {
                     html += `
-    <div class="box">
-        <div class="title">${app.name}</div>
-        <div class="desc">${app.desc}</div>
+<div class="box">
+    <div class="title">${app.name}</div>
+    <div class="desc">${app.desc}</div>
 
-        <div class="btn-row">
-            <div class="left-btns">
-                <a href="${app.file}" class="btn download-btn">⬇</a>
-                <div class="btn password-btn" onclick="window.open('${app.password}','_blank')">🔐</div>
-            </div>
+    <div class="btn-row">
+        <div class="left-btns">
+            ${app.file ? `<a href="${app.file}" class="btn download-btn">⬇</a>` : ``}
 
-            <div class="review-btn icon-btn" onclick="window.open('${app.review}','_blank')">
-                >
-            </div>
+            ${app.password ? `
+            <div class="btn password-btn" onclick="window.open('${app.password}','_blank')">🔐</div>
+            ` : ``}
         </div>
+
+        ${app.review ? `
+        <div class="review-btn icon-btn" onclick="window.open('${app.review}','_blank')">
+            >
+        </div>
+        ` : ``}
     </div>
+</div>
 `;
                 });
                 const search = document.getElementById("search");
