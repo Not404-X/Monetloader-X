@@ -1,0 +1,18 @@
+{
+  "x64": [
+    {
+      "name": "Client X64 v1",
+      "desc": "Versi stabil",
+      "file": "x64-v1.apk",
+      "review": "https://link-review-x64.com"
+    }
+  ],
+  "x32": [
+    {
+      "name": "Client X32 v1",
+      "desc": "Versi ringan",
+      "file": "x32-v1.apk",
+      "review": "https://link-review-x32.com"
+    }
+  ]
+}
