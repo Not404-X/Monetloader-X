@@ -408,16 +408,24 @@
         <div class="left-btns">
             ${app.file ? `<a href="${app.file}" class="btn download-btn">⬇</a>` : ``}
 
-            ${app.password ? `
+            ${
+                app.password
+                    ? `
             <div class="btn password-btn" onclick="window.open('${app.password}','_blank')">🔐</div>
-            ` : ``}
+            `
+                    : ``
+            }
         </div>
 
-        ${app.review ? `
+        ${
+            app.review
+                ? `
         <div class="review-btn icon-btn" onclick="window.open('${app.review}','_blank')">
             >
         </div>
-        ` : ``}
+        `
+                : ``
+        }
     </div>
 </div>
 `;
