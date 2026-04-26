@@ -5,13 +5,15 @@
             "desc": "Tampilkan nama target, Tampilkan HP (warna pink), Tampilkan Armor (warna putih), HP & Armor aman (0–100), Teks ber-outline supaya terbaca, Ringan & stabil. *Toggle / Command* /xdmg → ON / OFF UI target",
             "file": "https://sfl.gl/rv3iV",
             "review": "https://youtu.be/eAUKTbpQTf4?si=5BHAlpN-_Yb2hjVA",
-            "password": "https://sfl.gl/4zVgBnU"
+            "password": "https://sfl.gl/4zVgBnU",
+            "status": "update"
         },
                    {
                     "name": "Neon kendaraan (all client)",
             "desc": "Script ini berfungsi memasang neon di kendaraan roda dua maupun roda empat, script ini di lengkapai dengan menu untuk memudahkan penggunaanya. *Toggle* /xneon→ open menu",
             "file": "https://sfl.gl/NzqwbkeG",
-            "review": "https://youtu.be/YGAZMgOmMoE?si=roUva-xbulc3C7qi"
+            "review": "https://youtu.be/YGAZMgOmMoE?si=roUva-xbulc3C7qi",
+            "status": "new"
         }
     ],
     "x32": [
@@ -19,7 +21,8 @@
             "name": "Vehicle Jump (all client)",
             "desc": "Script yang bisa membuat kendaraan melompat dan sudah komplite dengan bypass. Toggle on off /vjump",
             "file": "https://sfl.gl/xCeWHYkU",
-            "review": "https://youtu.be/suga0kER6Qk?si=MWZlrj7bjNRedyu5"
+            "review": "https://youtu.be/suga0kER6Qk?si=MWZlrj7bjNRedyu5",
+            "status": "new"
         }
     ]
 }
