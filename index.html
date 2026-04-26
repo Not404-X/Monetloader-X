@@ -587,9 +587,6 @@
                     html += `
 <div class="box" data-name="${app.name.toLowerCase()}">
     <div class="title">
-    <div class="download-count" data-id="${app.name.replace(/\s+/g, "_")}">
-    ⬇ <span>0</span>
-</div>
     ${app.name}
     ${
         app.status === "new"
@@ -603,7 +600,7 @@
 
     <div class="btn-row">
         <div class="left-btns">
-            ${app.file      ? `<a href="${app.file}" class="btn download-btn" onclick="addDownload('${app.name.replace(/\s+/g, "_")}')">⬇</a>`      : ``}
+            ${app.file ? `<a href="${app.file}" class="btn download-btn">⬇</a>` : ``}
 
             ${
                 app.password
@@ -668,23 +665,6 @@
                 document.getElementById("download").style.display = "none";
                 document.getElementById("home").style.display = "block";
             }
-            
-            window.initDownloadCounter = function () {
-    document.querySelectorAll(".download-count").forEach(el => {
-        let id = el.dataset.id;
-        let span = el.querySelector("span");
-
-        let r = db.ref("downloads/" + id);
-
-r.on("value", snap => {
-    span.textContent = snap.val() || 0;
-});
-
-        onValue(r, snap => {
-            span.textContent = snap.val() || 0;
-        });
-    });
-};
 
             function openReview(link) {
                 window.open(link, "_blank");
@@ -887,97 +867,76 @@ r.on("value", snap => {
             // =====================
             firebase.initializeApp(firebaseConfig);
             const db = firebase.database();
-            
-            window.addEventListener("online", () => {
-    setTimeout(() => {
-        initRealtime();
-    }, 500);
-});
 
             window.react = function (el, type) {
-    if (!navigator.onLine) return;
+                let box = el.closest(".emoji-bar");
+                let id = box.dataset.id;
 
-    let box = el.closest(".emoji-bar");
-    let id = box.dataset.id;
+                let key = "react_" + id + "_" + type;
+                let already = localStorage.getItem(key);
 
-    let r = db.ref("reactions/" + id + "/" + type);
+                let r = db.ref("reactions/" + id + "/" + type);
 
-    r.transaction(current => {
-        return (current || 0) + 1;
-    });
-
-    // UI cuma efek visual, bukan data utama
-    el.style.opacity = "0.5";
-};
-
-    let box = el.closest(".emoji-bar");
-    let id = box.dataset.id;
-
-    let key = "react_" + id + "_" + type;
-    let r = db.ref("reactions/" + id + "/" + type);
-
-    let r = db.ref("reactions/" + id + "/" + type);
-
-    if (already) {
-        r.transaction(current => Math.max((current || 0) - 1, 0)).then(() => {
-            localStorage.removeItem(key);
-            el.style.opacity = "1";
-        });
-    } else {
-        r.transaction(current => (current || 0) + 1).then(() => {
-            localStorage.setItem(key, "1");
-            el.style.opacity = "0.5";
-        });
-    }
-};
+                if (already) {
+                    r.transaction(current =>
+                        Math.max((current || 0) - 1, 0)
+                    ).then(() => {
+                        localStorage.removeItem(key);
+                        el.style.opacity = "1";
+                    });
+                } else {
+                    r.transaction(current => (current || 0) + 1).then(() => {
+                        localStorage.setItem(key, "1");
+                        el.style.opacity = "0.5";
+                    });
+                }
+            };
 
             // =====================
             // REALTIME UPDATE FIX
             // =====================
             window.initRealtime = function () {
+                document.querySelectorAll(".emoji-bar").forEach(bar => {
+                    let id = bar.dataset.id;
+                    let list = bar.querySelector(".emoji-list");
 
-    document.querySelectorAll(".emoji-bar").forEach(bar => {
-        let id = bar.dataset.id;
-        let list = bar.querySelector(".emoji-list");
+                    let r = db.ref("reactions/" + id);
 
-        let r = db.ref("reactions/" + id);
+                    r.on("value", snap => {
+                        let data = snap.val() || {};
+                        list.innerHTML = "";
 
-        r.on("value", snap => {
-            let data = snap.val() || {};
+                        Object.keys(data).forEach(key => {
+                            let val = data[key];
+                            if (!val || val <= 0) return;
 
-            list.innerHTML = "";
+                            let emoji = emojiSet.find(e => e.key === key);
+                            if (!emoji) return;
 
-            Object.keys(data).forEach(key => {
-                let val = data[key];
-                if (!val || val <= 0) return;
+                            let span = document.createElement("span");
+                            span.dataset.type = key;
 
-                let emoji = emojiSet.find(e => e.key === key);
-                if (!emoji) return;
-
-                let span = document.createElement("span");
-                span.dataset.type = key;
-
-                if (emoji.type === "image") {
-                    span.innerHTML = `
+                            if (emoji.type === "image") {
+                                span.innerHTML = `
                         <img src="${emoji.url}" style="width:16px;height:16px;">
                         <b>${val}</b>
                     `;
-                } else {
-                    span.innerHTML = `
+                            } else {
+                                span.innerHTML = `
                         ${emoji.icon}
                         <b>${val}</b>
                     `;
-                }
+                            }
 
-                span.onclick = function () {
-                    react(this, key);
-                };
+                            span.onclick = function () {
+                                react(this, key);
+                            };
 
-                list.appendChild(span);
-            });
-        });
-    });
-};
+                            list.appendChild(span);
+                        });
+                    });
+                });
+            };
         </script>
     </body>
 </html>
