@@ -887,18 +887,34 @@ r.on("value", snap => {
             // =====================
             firebase.initializeApp(firebaseConfig);
             const db = firebase.database();
+            
+            window.addEventListener("online", () => {
+    setTimeout(() => {
+        initRealtime();
+    }, 500);
+});
 
             window.react = function (el, type) {
-    if (!navigator.onLine) {
-        alert("Koneksi mati, reaction tidak bisa dipakai");
-        return;
-    }
+    if (!navigator.onLine) return;
+
+    let box = el.closest(".emoji-bar");
+    let id = box.dataset.id;
+
+    let r = db.ref("reactions/" + id + "/" + type);
+
+    r.transaction(current => {
+        return (current || 0) + 1;
+    });
+
+    // UI cuma efek visual, bukan data utama
+    el.style.opacity = "0.5";
+};
 
     let box = el.closest(".emoji-bar");
     let id = box.dataset.id;
 
     let key = "react_" + id + "_" + type;
-    let already = localStorage.getItem(key);
+    let r = db.ref("reactions/" + id + "/" + type);
 
     let r = db.ref("reactions/" + id + "/" + type);
 
@@ -919,47 +935,49 @@ r.on("value", snap => {
             // REALTIME UPDATE FIX
             // =====================
             window.initRealtime = function () {
-                document.querySelectorAll(".emoji-bar").forEach(bar => {
-                    let id = bar.dataset.id;
-                    let list = bar.querySelector(".emoji-list");
 
-                    let r = db.ref("reactions/" + id);
+    document.querySelectorAll(".emoji-bar").forEach(bar => {
+        let id = bar.dataset.id;
+        let list = bar.querySelector(".emoji-list");
 
-                    r.on("value", snap => {
-                        let data = snap.val() || {};
-                        list.innerHTML = "";
+        let r = db.ref("reactions/" + id);
 
-                        Object.keys(data).forEach(key => {
-                            let val = data[key];
-                            if (!val || val <= 0) return;
+        r.on("value", snap => {
+            let data = snap.val() || {};
 
-                            let emoji = emojiSet.find(e => e.key === key);
-                            if (!emoji) return;
+            list.innerHTML = "";
 
-                            let span = document.createElement("span");
-                            span.dataset.type = key;
+            Object.keys(data).forEach(key => {
+                let val = data[key];
+                if (!val || val <= 0) return;
 
-                            if (emoji.type === "image") {
-                                span.innerHTML = `
+                let emoji = emojiSet.find(e => e.key === key);
+                if (!emoji) return;
+
+                let span = document.createElement("span");
+                span.dataset.type = key;
+
+                if (emoji.type === "image") {
+                    span.innerHTML = `
                         <img src="${emoji.url}" style="width:16px;height:16px;">
                         <b>${val}</b>
                     `;
-                            } else {
-                                span.innerHTML = `
+                } else {
+                    span.innerHTML = `
                         ${emoji.icon}
                         <b>${val}</b>
                     `;
-                            }
+                }
 
-                            span.onclick = function () {
-                                react(this, key);
-                            };
+                span.onclick = function () {
+                    react(this, key);
+                };
 
-                            list.appendChild(span);
-                        });
-                    });
-                });
-            };
+                list.appendChild(span);
+            });
+        });
+    });
+};
         </script>
     </body>
 </html>
