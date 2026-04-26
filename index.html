@@ -384,90 +384,90 @@
                     border-color: #facc15;
                 }
             }
-.emoji-bar {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    flex-wrap: wrap;
-    max-width: 100%;
-}
+            .emoji-bar {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                flex-wrap: wrap;
+                max-width: 100%;
+            }
 
-/* LIST EMOJI */
-.emoji-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    align-items: center;
-}
+            /* LIST EMOJI */
+            .emoji-list {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 6px;
+                align-items: center;
+            }
 
-/* ITEM EMOJI */
-.emoji-list span {
-    background: rgba(255, 255, 255, 0.08);
-    padding: 4px 8px;
-    border-radius: 10px;
-    font-size: 12px;
+            /* ITEM EMOJI */
+            .emoji-list span {
+                background: rgba(255, 255, 255, 0.08);
+                padding: 4px 8px;
+                border-radius: 10px;
+                font-size: 12px;
 
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
+                cursor: pointer;
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
 
-    white-space: nowrap;
-    transition: 0.15s;
-}
+                white-space: nowrap;
+                transition: 0.15s;
+            }
 
-.emoji-list span:hover {
-    transform: scale(1.05);
-}
+            .emoji-list span:hover {
+                transform: scale(1.05);
+            }
 
-/* BUTTON + */
-.emoji-add {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    border: none;
+            /* BUTTON + */
+            .emoji-add {
+                width: 28px;
+                height: 28px;
+                border-radius: 50%;
+                border: none;
 
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
+                background: rgba(255, 255, 255, 0.1);
+                color: white;
 
-    cursor: pointer;
-    flex-shrink: 0;
-}
+                cursor: pointer;
+                flex-shrink: 0;
+            }
 
-/* PICKER */
-.emoji-picker {
-    position: absolute;
-    background: #18181b;
-    padding: 8px;
-    border-radius: 10px;
+            /* PICKER */
+            .emoji-picker {
+                position: absolute;
+                background: #18181b;
+                padding: 8px;
+                border-radius: 10px;
 
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 6px;
+                display: grid;
+                grid-template-columns: repeat(6, 1fr);
+                gap: 6px;
 
-    z-index: 9999;
-    max-width: 220px;
-}
+                z-index: 9999;
+                max-width: 220px;
+            }
 
-/* EMOJI DALAM PICKER */
-.emoji-picker span {
-    font-size: 18px;
-    text-align: center;
-    cursor: pointer;
+            /* EMOJI DALAM PICKER */
+            .emoji-picker span {
+                font-size: 18px;
+                text-align: center;
+                cursor: pointer;
 
-    padding: 6px;
-    border-radius: 6px;
+                padding: 6px;
+                border-radius: 6px;
 
-    transition: 0.15s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
+                transition: 0.15s;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
 
-.emoji-picker span:hover {
-    background: rgba(255, 255, 255, 0.1);
-    transform: scale(1.2);
-}
+            .emoji-picker span:hover {
+                background: rgba(255, 255, 255, 0.1);
+                transform: scale(1.2);
+            }
         </style>
     </head>
 
@@ -935,31 +935,31 @@
 
                         Object.keys(data).forEach(key => {
                             let val = data[key];
-                            if (!val || val <= 0) return;
+if (val === null || val === undefined) val = 0;
 
-                            let emoji = emojiSet.find(e => e.key === key);
-                            if (!emoji) return;
+let emoji = emojiSet.find(e => e.key === key);
+if (!emoji) return;
 
-                            let span = document.createElement("span");
-                            span.dataset.type = key;
+let span = document.createElement("span");
+span.dataset.type = key;
 
-                            if (emoji.type === "image") {
-                                span.innerHTML = `
-                        <img src="${emoji.url}" style="width:16px;height:16px;">
-                        <b>${val}</b>
-                    `;
-                            } else {
-                                span.innerHTML = `
-                        ${emoji.icon}
-                        <b>${val}</b>
-                    `;
-                            }
+if (emoji.type === "image") {
+    span.innerHTML = `
+        <img src="${emoji.url}" style="width:16px;height:16px;">
+        <b>${val}</b>
+    `;
+} else {
+    span.innerHTML = `
+        ${emoji.icon}
+        <b>${val}</b>
+    `;
+}
 
-                            span.onclick = function () {
-                                react(this, key);
-                            };
+span.onclick = function () {
+    react(this, key);
+};
 
-                            list.appendChild(span);
+list.appendChild(span);
                         });
                     });
                 });
