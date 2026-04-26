@@ -380,33 +380,82 @@
                     border-color: #facc15;
                 }
             }
-            .emoji-bar span {
-                transition: 0.2s;
-            }
-            .emoji-bar {
-                display: flex;
-                align-items: center;
-                gap: 6px;
-                flex-wrap: wrap;
-            }
+            .emoji-bar{
+  display: flex;
+  align-items: center;
+  gap: 6px;
 
-            .emoji-bar span {
-                background: rgba(255, 255, 255, 0.08);
-                padding: 4px 8px;
-                border-radius: 20px;
-                font-size: 13px;
-                cursor: pointer;
-            }
+  flex-wrap: wrap;
+  max-width: 100%;
+}
 
-            .emoji-add {
-                width: 28px;
-                height: 28px;
-                border-radius: 50%;
-                border: none;
-                background: rgba(255, 255, 255, 0.1);
-                color: white;
-                cursor: pointer;
-            }
+/* 🔥 bikin emoji rapi 3 per baris */
+.emoji-list{
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  gap: 6px;
+}
+
+/* emoji style */
+.emoji-bar span{
+  background: rgba(255,255,255,0.08);
+  padding: 4px 8px;
+  border-radius: 20px;
+  font-size: 12px;
+
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+
+  white-space: nowrap;
+  transition: 0.15s;
+}
+
+.emoji-bar span:hover{
+  transform: scale(1.05);
+}
+
+/* tombol + tetap di kanan */
+.emoji-add{
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+
+  background: rgba(255,255,255,0.1);
+  color: white;
+
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.emoji-picker{
+  position: absolute;
+  background: #18181b;
+  padding: 8px;
+  border-radius: 10px;
+
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
+
+  z-index: 9999;
+  max-width: 220px;
+}
+
+.emoji-picker span{
+  font-size: 18px;   /* 🔥 ini yang bikin tidak gede */
+  text-align: center;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  transition: 0.15s;
+}
+
+.emoji-picker span:hover{
+  background: rgba(255,255,255,0.1);
+  transform: scale(1.2);
+}
         </style>
     </head>
 
@@ -555,7 +604,7 @@
             `
                     : ``
             }
-     <div class="emoji-bar" data-id="${app.name.replace(/\s+/g, "_")}">
+     <div class="emoji-bar" data-id="${app.name.replace(/\s+/g,'_')}">
   <div class="emoji-list"></div>
 
   <button class="emoji-add" onclick="openEmoji(this)">＋</button>
@@ -617,71 +666,114 @@
                     percent + "%";
             }
             const emojiSet = [
-                { key: "fire", icon: "🔥" },
-                { key: "laugh", icon: "😂" },
-                { key: "cool", icon: "😎" },
-                { key: "skull", icon: "💀" },
-                { key: "heart", icon: "❤️" },
-                { key: "like", icon: "👍" },
-                { key: "angry", icon: "😡" },
-                { key: "shock", icon: "😱" }
-            ];
+  { key: "fire", icon: "🔥" },
+  { key: "laugh", icon: "😂" },
+  { key: "cool", icon: "😎" },
+  { key: "skull", icon: "💀" },
+  { key: "heart", icon: "❤️" },
+  { key: "like", icon: "👍" },
+  { key: "angry", icon: "😡" },
+  { key: "shock", icon: "😱" }
+];
 
-            window.openEmoji = function (btn) {
-                let bar = btn.parentElement;
+window.openEmoji = function(btn){
+  let bar = btn.parentElement;
 
-                let old = document.querySelector(".emoji-picker");
-                if (old) old.remove();
+  // hapus picker lama
+  let old = document.querySelector(".emoji-picker");
+  if(old) old.remove();
 
-                let picker = document.createElement("div");
-                picker.className = "emoji-picker";
+  let picker = document.createElement("div");
+  picker.className = "emoji-picker";
 
-                picker.style.position = "absolute";
-                picker.style.background = "#1f1f2e";
-                picker.style.padding = "8px";
-                picker.style.borderRadius = "10px";
-                picker.style.display = "flex";
-                picker.style.gap = "6px";
-                picker.style.zIndex = "9999";
+  // ======================
+  // isi emoji
+  // ======================
+  emojiSet.forEach(e=>{
+    let el = document.createElement("span");
+    el.textContent = e.icon;
+    el.style.cursor = "pointer";
 
-                emojiSet.forEach(e => {
-                    let el = document.createElement("span");
-                    el.textContent = e.icon;
-                    el.style.cursor = "pointer";
+    el.onclick = ()=>{
+      addEmoji(bar, e);
+      picker.remove();
+      removeOutsideListener();
+    };
 
-                    el.onclick = () => {
-                        addEmoji(bar, e);
-                        picker.remove();
-                    };
+    picker.appendChild(el);
+  });
 
-                    picker.appendChild(el);
-                });
+  document.body.appendChild(picker);
 
-                document.body.appendChild(picker);
+  // ======================
+  // POSITION SAFE
+  // ======================
+  let rect = btn.getBoundingClientRect();
 
-                let rect = btn.getBoundingClientRect();
-                picker.style.top = rect.bottom + "px";
-                picker.style.left = rect.left + "px";
-            };
-            function addEmoji(bar, emojiObj) {
-                let id = bar.dataset.id;
+  let pickerWidth = 220;
+  let pickerHeight = 180;
 
-                let span = bar.querySelector(`[data-type="${emojiObj.key}"]`);
+  let top = rect.bottom;
+  let left = rect.left;
 
-                if (!span) {
-                    span = document.createElement("span");
-                    span.dataset.type = emojiObj.key;
-                    span.innerHTML = `${emojiObj.icon} <b>0</b>`;
+  if(left + pickerWidth > window.innerWidth){
+    left = window.innerWidth - pickerWidth - 10;
+  }
 
-                    span.onclick = function () {
-                        react(this, emojiObj.key);
-                    };
+  if(top + pickerHeight > window.innerHeight){
+    top = rect.top - pickerHeight;
+  }
 
-                    bar.querySelector(".emoji-list").appendChild(span);
-                }
+  picker.style.top = top + "px";
+  picker.style.left = left + "px";
 
-                react(span, emojiObj.key);
-            }
+  // ======================
+  // AUTO CLOSE OUTSIDE CLICK
+  // ======================
+  function handleOutside(e){
+    if(!picker.contains(e.target) && e.target !== btn){
+      picker.remove();
+      removeOutsideListener();
+    }
+  }
+
+  function removeOutsideListener(){
+    document.removeEventListener("click", handleOutside);
+  }
+
+  setTimeout(()=>{
+    document.addEventListener("click", handleOutside);
+  }, 10);
+}
+
+
+// ======================
+// ADD EMOJI (FIX SAFE)
+// ======================
+function addEmoji(bar, emojiObj){
+  let id = bar.dataset.id;
+
+  let span = bar.querySelector(`[data-type="${emojiObj.key}"]`);
+
+  if(!span){
+    span = document.createElement("span");
+    span.dataset.type = emojiObj.key;
+    span.innerHTML = `${emojiObj.icon} <b>0</b>`;
+
+    span.onclick = function(){
+      react(this, emojiObj.key);
+    };
+
+    bar.querySelector(".emoji-list").appendChild(span);
+  }
+
+  react(span, emojiObj.key);
+
+  // optional: auto scroll ke emoji baru
+  setTimeout(()=>{
+    bar.scrollLeft = bar.scrollWidth;
+  }, 50);
+}
 
             function loadFake(src) {
                 return new Promise(res => {
@@ -717,99 +809,96 @@
 
             startSplash();
         </script>
+       
 
-        <script type="module">
-            import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
-            import {
-                getDatabase,
-                ref,
-                onValue,
-                runTransaction
-            } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-database.js";
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
+import { getDatabase, ref, onValue, runTransaction } 
+from "https://www.gstatic.com/firebasejs/12.12.1/firebase-database.js";
 
-            const firebaseConfig = {
-                apiKey: "AIzaSyAxl9TLl8uNb5c463aTz_JPtOAKJpgJ5kE",
-                authDomain: "database-x-64b77.firebaseapp.com",
-                databaseURL:
-                    "https://database-x-64b77-default-rtdb.asia-southeast1.firebasedatabase.app", // 🔥 WAJIB TAMBAH INI
-                projectId: "database-x-64b77",
-                storageBucket: "database-x-64b77.firebasestorage.app",
-                messagingSenderId: "1028544639743",
-                appId: "1:1028544639743:web:6e75bf0d63be58491192ca"
-            };
+const firebaseConfig = {
+  apiKey: "AIzaSyAxl9TLl8uNb5c463aTz_JPtOAKJpgJ5kE",
+  authDomain: "database-x-64b77.firebaseapp.com",
+  databaseURL: "https://database-x-64b77-default-rtdb.asia-southeast1.firebasedatabase.app", // 🔥 WAJIB TAMBAH INI
+  projectId: "database-x-64b77",
+  storageBucket: "database-x-64b77.firebasestorage.app",
+  messagingSenderId: "1028544639743",
+  appId: "1:1028544639743:web:6e75bf0d63be58491192ca"
+};
 
-            const app = initializeApp(firebaseConfig);
-            const db = getDatabase(app);
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
-            // 🔥 klik emoji
-            window.react = function (el, type) {
-                let box = el.closest(".emoji-bar");
-                let id = box.dataset.id;
+// 🔥 klik emoji
+window.react = function(el, type){
 
-                let key = "react_" + id + "_" + type;
-                let already = localStorage.getItem(key);
+  let box = el.closest(".emoji-bar");
+  let id = box.dataset.id;
 
-                let r = ref(db, "reactions/" + id + "/" + type);
+  let key = "react_" + id + "_" + type;
+  let already = localStorage.getItem(key);
 
-                if (already) {
-                    runTransaction(r, current =>
-                        Math.max((current || 0) - 1, 0)
-                    ).then(() => {
-                        localStorage.removeItem(key);
-                        el.style.opacity = "1";
-                    });
-                } else {
-                    runTransaction(r, current => (current || 0) + 1).then(
-                        () => {
-                            localStorage.setItem(key, "1");
-                            el.style.opacity = "0.5";
-                        }
-                    );
-                }
-            };
+  let r = ref(db, "reactions/" + id + "/" + type);
 
-            // 📊 realtime update
-            window.initRealtime = function () {
-                document.querySelectorAll(".emoji-bar").forEach(box => {
-                    let id = box.dataset.id;
-                    let list = box.querySelector(".emoji-list");
+  if(already){
+    runTransaction(r, (current) => Math.max((current || 0) - 1, 0))
+    .then(()=>{
+      localStorage.removeItem(key);
+      el.style.opacity = "1";
+    });
 
-                    let r = ref(db, "reactions/" + id);
+  } else {
+    runTransaction(r, (current) => (current || 0) + 1)
+    .then(()=>{
+      localStorage.setItem(key, "1");
+      el.style.opacity = "0.5";
+    });
+  }
+}
 
-                    onValue(r, snap => {
-                        let data = snap.val() || {};
+// 📊 realtime update
+window.initRealtime = function () {
+  document.querySelectorAll(".emoji-bar").forEach((box) => {
+    let id = box.dataset.id;
+    let list = box.querySelector(".emoji-list");
 
-                        list.innerHTML = "";
+    let r = ref(db, "reactions/" + id);
 
-                        Object.entries(data).forEach(([key, val]) => {
-                            // ❌ kalau emoji tidak ada di set → hapus dari Firebase
-                            let emoji = emojiSet.find(e => e.key === key);
+    onValue(r, (snap) => {
+      let data = snap.val() || {};
 
-                            if (!emoji) {
-                                runTransaction(
-                                    ref(db, "reactions/" + id + "/" + key),
-                                    () => null
-                                );
-                                return;
-                            }
+      list.innerHTML = "";
 
-                            // ❌ kalau 0 jangan tampil
-                            if (val <= 0) return;
+      Object.entries(data).forEach(([key, val]) => {
 
-                            // ✔ render emoji
-                            let span = document.createElement("span");
-                            span.dataset.type = key;
-                            span.innerHTML = `${emoji.icon} <b>${val}</b>`;
+        // ❌ kalau emoji tidak ada di set → hapus dari Firebase
+        let emoji = emojiSet.find(e => e.key === key);
 
-                            span.onclick = function () {
-                                react(this, key);
-                            };
+        if (!emoji) {
+          runTransaction(
+            ref(db, "reactions/" + id + "/" + key),
+            () => null
+          );
+          return;
+        }
 
-                            list.appendChild(span);
-                        });
-                    });
-                });
-            };
-        </script>
+        // ❌ kalau 0 jangan tampil
+        if (val <= 0) return;
+
+        // ✔ render emoji
+        let span = document.createElement("span");
+        span.dataset.type = key;
+        span.innerHTML = `${emoji.icon} <b>${val}</b>`;
+
+        span.onclick = function () {
+          react(this, key);
+        };
+
+        list.appendChild(span);
+      });
+    });
+  });
+};
+</script>
     </body>
 </html>
