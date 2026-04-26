@@ -869,28 +869,44 @@
             const db = firebase.database();
 
             window.react = function (el, type) {
-                let box = el.closest(".emoji-bar");
-                let id = box.dataset.id;
+    if (!navigator.onLine) return;
 
-                let key = "react_" + id + "_" + type;
-                let already = localStorage.getItem(key);
+    let box = el.closest(".emoji-bar");
+    let id = box.dataset.id;
 
-                let r = db.ref("reactions/" + id + "/" + type);
+    let lockKey = "react_lock_" + id;
+    let current = localStorage.getItem(lockKey);
 
-                if (already) {
-                    r.transaction(current =>
-                        Math.max((current || 0) - 1, 0)
-                    ).then(() => {
-                        localStorage.removeItem(key);
-                        el.style.opacity = "1";
-                    });
-                } else {
-                    r.transaction(current => (current || 0) + 1).then(() => {
-                        localStorage.setItem(key, "1");
-                        el.style.opacity = "0.5";
-                    });
-                }
-            };
+    let r = db.ref("reactions/" + id);
+
+    // 🔥 CEK: kalau sudah pernah react di card ini
+    if (current && current !== type) {
+        alert("Kamu hanya bisa 1 reaction per card");
+        return;
+    }
+
+    let key = "react_" + id + "_" + type;
+    let already = localStorage.getItem(key);
+
+    let refReact = db.ref("reactions/" + id + "/" + type);
+
+    if (already) {
+        // 🔥 UNLIKE
+        refReact.transaction(v => Math.max((v || 0) - 1, 0)).then(() => {
+            localStorage.removeItem(key);
+            localStorage.removeItem(lockKey);
+            el.style.opacity = "1";
+        });
+
+    } else {
+        // 🔥 LIKE
+        refReact.transaction(v => (v || 0) + 1).then(() => {
+            localStorage.setItem(key, "1");
+            localStorage.setItem(lockKey, type);
+            el.style.opacity = "0.5";
+        });
+    }
+};
 
             // =====================
             // REALTIME UPDATE FIX
