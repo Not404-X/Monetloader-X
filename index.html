@@ -383,125 +383,124 @@
             /* =========================
    EMOJI BAR CONTAINER
 ========================= */
-.emoji-bar {
-    position: relative;
-    display: flex;
-    flex-direction: column; /* penting biar tombol bisa di bawah */
-    align-items: flex-start;
-    gap: 6px;
-    max-width: 100%;
-}
+            .emoji-bar {
+                position: relative;
+                display: flex;
+                flex-direction: column; /* penting biar tombol bisa di bawah */
+                align-items: flex-start;
+                gap: 6px;
+                max-width: 100%;
+            }
 
-/* =========================
+            /* =========================
    EMOJI LIST (3 PER BARIS)
 ========================= */
-.emoji-list {
-    display: grid;
-    grid-template-columns: repeat(3, auto);
-    gap: 6px;
-    width: 100%;
-}
+            .emoji-list {
+                display: grid;
+                grid-template-columns: repeat(3, auto);
+                gap: 6px;
+                width: 100%;
+            }
 
-/* =========================
+            /* =========================
    EMOJI ITEM
 ========================= */
-/* =========================
+            /* =========================
    EMOJI REACTION BOX (DISCORD STYLE)
 ========================= */
-.emoji-bar span {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
+            .emoji-bar span {
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
 
-    padding: 2px 6px;        /* 🔥 lebih kecil & rapat */
-    border-radius: 6px;      /* 🔥 kotak agak rounded tipis (bukan pill) */
+                padding: 2px 6px; /* 🔥 lebih kecil & rapat */
+                border-radius: 6px; /* 🔥 kotak agak rounded tipis (bukan pill) */
 
-    background: rgba(255, 255, 255, 0.08);
+                background: rgba(255, 255, 255, 0.08);
 
-    font-size: 11px;         /* 🔥 sedikit kecil biar compact */
+                font-size: 11px; /* 🔥 sedikit kecil biar compact */
 
-    cursor: pointer;
-    transition: 0.12s;
+                cursor: pointer;
+                transition: 0.12s;
 
-    white-space: nowrap;
-    line-height: 1;
-}
+                white-space: nowrap;
+                line-height: 1;
+            }
 
-/* hover ala discord */
-.emoji-bar span:hover {
-    background: rgba(255, 255, 255, 0.14);
-}
+            /* hover ala discord */
+            .emoji-bar span:hover {
+                background: rgba(255, 255, 255, 0.14);
+            }
 
-/* emoji + number biar rapat */
-.emoji-bar span b {
-    font-weight: 600;
-    margin-left: 2px;
-}
+            /* emoji + number biar rapat */
+            .emoji-bar span b {
+                font-weight: 600;
+                margin-left: 2px;
+            }
 
-/* =========================
+            /* =========================
    BUTTON "+"
    (LEFT BOTTOM FLOAT)
 ========================= */
-.emoji-add {
-    
-    bottom: 0;
-    left: 50px;
+            .emoji-add {
+                bottom: 0;
+                left: 50px;
 
-    width: 26px;
-    height: 26px;
+                width: 26px;
+                height: 26px;
 
-    border-radius: 50%;
-    border: none;
+                border-radius: 50%;
+                border: none;
 
-    background: rgba(255, 255, 255, 0.12);
-    color: white;
+                background: rgba(255, 255, 255, 0.12);
+                color: white;
 
-    font-size: 16px;
-    cursor: pointer;
+                font-size: 16px;
+                cursor: pointer;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+                display: flex;
+                align-items: center;
+                justify-content: center;
 
-    z-index: 5;
-    transition: 0.15s;
-}
+                z-index: 5;
+                transition: 0.15s;
+            }
 
-.emoji-add:hover {
-    background: rgba(255, 255, 255, 0.25);
-    transform: scale(1.05);
-}
+            .emoji-add:hover {
+                background: rgba(255, 255, 255, 0.25);
+                transform: scale(1.05);
+            }
 
-/* =========================
+            /* =========================
    EMOJI PICKER (POPUP)
 ========================= */
-.emoji-picker {
-    position: absolute;
-    background: #18181b;
-    padding: 8px;
-    border-radius: 10px;
+            .emoji-picker {
+                position: absolute;
+                background: #18181b;
+                padding: 8px;
+                border-radius: 10px;
 
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 6px;
+                display: grid;
+                grid-template-columns: repeat(6, 1fr);
+                gap: 6px;
 
-    z-index: 9999;
-    max-width: 220px;
-}
+                z-index: 9999;
+                max-width: 220px;
+            }
 
-.emoji-picker span {
-    font-size: 18px;
-    text-align: center;
-    cursor: pointer;
-    padding: 4px;
-    border-radius: 6px;
-    transition: 0.15s;
-}
+            .emoji-picker span {
+                font-size: 18px;
+                text-align: center;
+                cursor: pointer;
+                padding: 4px;
+                border-radius: 6px;
+                transition: 0.15s;
+            }
 
-.emoji-picker span:hover {
-    background: rgba(255, 255, 255, 0.1);
-    transform: scale(1.2);
-}
+            .emoji-picker span:hover {
+                background: rgba(255, 255, 255, 0.1);
+                transform: scale(1.2);
+            }
         </style>
     </head>
 
@@ -693,20 +692,20 @@
                 setTimeout(initRealtime, 100);
             }
             async function loadEmoji() {
-    try {
-        const res = await fetch(
-            "https://raw.githubusercontent.com/Not404-X/Monetloader-X/refs/heads/main/emoji.json"
-        );
+                try {
+                    const res = await fetch(
+                        "https://raw.githubusercontent.com/Not404-X/Monetloader-X/refs/heads/main/emoji.json"
+                    );
 
-        const data = await res.json();
+                    const data = await res.json();
 
-        emojiSet = data.emojiSet || [];
+                    emojiSet = data.emojiSet || [];
 
-        console.log("Emoji loaded:", emojiSet);
-    } catch (e) {
-        console.log("Emoji gagal load:", e);
-    }
-}
+                    console.log("Emoji loaded:", emojiSet);
+                } catch (e) {
+                    console.log("Emoji gagal load:", e);
+                }
+            }
 
             function showHome() {
                 document.getElementById("download").style.display = "none";
@@ -732,7 +731,6 @@
                 document.getElementById("loadingProgress").style.width =
                     percent + "%";
             }
-            
 
             window.openEmoji = function (btn) {
                 let bar = btn.parentElement;
@@ -876,8 +874,8 @@
             }
 
             loadApps();
-loadEmoji();
-startSplash();
+            loadEmoji();
+            startSplash();
         </script>
 
         <script type="module">
