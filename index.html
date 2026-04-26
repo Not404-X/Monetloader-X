@@ -935,31 +935,31 @@
 
                         Object.keys(data).forEach(key => {
                             let val = data[key];
-if (val === null || val === undefined) val = 0;
+                            if (!val || val <= 0) return;
 
-let emoji = emojiSet.find(e => e.key === key);
-if (!emoji) return;
+                            let emoji = emojiSet.find(e => e.key === key);
+                            if (!emoji) return;
 
-let span = document.createElement("span");
-span.dataset.type = key;
+                            let span = document.createElement("span");
+                            span.dataset.type = key;
 
-if (emoji.type === "image") {
-    span.innerHTML = `
-        <img src="${emoji.url}" style="width:16px;height:16px;">
-        <b>${val}</b>
-    `;
-} else {
-    span.innerHTML = `
-        ${emoji.icon}
-        <b>${val}</b>
-    `;
-}
+                            if (emoji.type === "image") {
+                                span.innerHTML = `
+                        <img src="${emoji.url}" style="width:16px;height:16px;">
+                        <b>${val}</b>
+                    `;
+                            } else {
+                                span.innerHTML = `
+                        ${emoji.icon}
+                        <b>${val}</b>
+                    `;
+                            }
 
-span.onclick = function () {
-    react(this, key);
-};
+                            span.onclick = function () {
+                                react(this, key);
+                            };
 
-list.appendChild(span);
+                            list.appendChild(span);
                         });
                     });
                 });
