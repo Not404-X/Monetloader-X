@@ -642,20 +642,20 @@
                 setTimeout(initRealtime, 100);
             }
             async function loadEmoji() {
-    try {
-        const res = await fetch(
-            "https://raw.githubusercontent.com/Not404-X/Monetloader-X/refs/heads/main/emoji.json"
-        );
+                try {
+                    const res = await fetch(
+                        "https://raw.githubusercontent.com/Not404-X/Monetloader-X/refs/heads/main/emoji.json"
+                    );
 
-        const data = await res.json();
+                    const data = await res.json();
 
-        emojiSet = data.emojiSet || [];
+                    emojiSet = data.emojiSet || [];
 
-        console.log("Emoji loaded:", emojiSet);
-    } catch (e) {
-        console.log("Emoji gagal load:", e);
-    }
-}
+                    console.log("Emoji loaded:", emojiSet);
+                } catch (e) {
+                    console.log("Emoji gagal load:", e);
+                }
+            }
 
             function showHome() {
                 document.getElementById("download").style.display = "none";
@@ -681,7 +681,6 @@
                 document.getElementById("loadingProgress").style.width =
                     percent + "%";
             }
-            
 
             window.openEmoji = function (btn) {
                 let bar = btn.parentElement;
@@ -825,8 +824,8 @@
             }
 
             loadApps();
-loadEmoji();
-startSplash();
+            loadEmoji();
+            startSplash();
         </script>
 
         <script type="module">
