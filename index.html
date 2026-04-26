@@ -666,17 +666,17 @@
                     percent + "%";
             }
             const emojiSet = [
-  { key: "crown", icon: "👑" },
-  { key: "100", icon: "💯" },
-  { key: "indo", icon: "🇮🇩" },
+                { key: "crown", icon: "👑" },
+                { key: "100", icon: "💯" },
+                { key: "indo", icon: "🇮🇩" },
 
-  // CUSTOM EMOJI (DISCORD STYLE READY)
-  {
-    key: "not404",
-    type: "image",
-    url: "https://images.emojiterra.com/google/noto-emoji/unicode-17.0/color/svg/1f517.svg"
-  }
-];
+                // CUSTOM EMOJI (DISCORD STYLE READY)
+                {
+                    key: "not404",
+                    type: "image",
+                    url: "https://images.emojiterra.com/google/noto-emoji/unicode-17.0/color/svg/1f517.svg"
+                }
+            ];
 
             window.openEmoji = function (btn) {
                 let bar = btn.parentElement;
@@ -693,16 +693,16 @@
                 // ======================
                 emojiSet.forEach(e => {
                     let el = document.createElement("span");
-                    if(e.url){
-  let img = document.createElement("img");
-  img.src = e.url;
-  img.style.width = "20px";
-  img.style.height = "20px";
+                    if (e.url) {
+                        let img = document.createElement("img");
+                        img.src = e.url;
+                        img.style.width = "20px";
+                        img.style.height = "20px";
 
-  el.appendChild(img);
-} else {
-  el.textContent = e.icon;
-}
+                        el.appendChild(img);
+                    } else {
+                        el.textContent = e.icon;
+                    }
                     el.style.cursor = "pointer";
 
                     el.onclick = () => {
@@ -768,11 +768,11 @@
                 if (!span) {
                     span = document.createElement("span");
                     span.dataset.type = emojiObj.key;
-                    if(emojiObj.url){
-  span.innerHTML = `<img src="${emojiObj.url}" style="width:16px;height:16px;"> <b>0</b>`;
-} else {
-  span.innerHTML = `${emojiObj.icon} <b>0</b>`;
-}
+                    if (emojiObj.url) {
+                        span.innerHTML = `<img src="${emojiObj.url}" style="width:16px;height:16px;"> <b>0</b>`;
+                    } else {
+                        span.innerHTML = `${emojiObj.icon} <b>0</b>`;
+                    }
 
                     span.onclick = function () {
                         react(this, emojiObj.key);
@@ -876,54 +876,54 @@
 
             // 📊 realtime update
             window.initRealtime = function () {
-  document.querySelectorAll(".emoji-bar").forEach(bar => {
-    let id = bar.dataset.id;
-    let list = bar.querySelector(".emoji-list");
+                document.querySelectorAll(".emoji-bar").forEach(bar => {
+                    let id = bar.dataset.id;
+                    let list = bar.querySelector(".emoji-list");
 
-    let r = ref(db, "reactions/" + id);
+                    let r = ref(db, "reactions/" + id);
 
-    onValue(r, snap => {
-      let data = snap.val() || {};
+                    onValue(r, snap => {
+                        let data = snap.val() || {};
 
-      list.innerHTML = "";
+                        list.innerHTML = "";
 
-      Object.keys(data).forEach(key => {
-        let val = data[key];
+                        Object.keys(data).forEach(key => {
+                            let val = data[key];
 
-        // ❌ skip 0
-        if (!val || val <= 0) return;
+                            // ❌ skip 0
+                            if (!val || val <= 0) return;
 
-        // ✔ cari emoji
-        let emoji = emojiSet.find(e => e.key === key);
+                            // ✔ cari emoji
+                            let emoji = emojiSet.find(e => e.key === key);
 
-        // ❌ kalau tidak ada mapping → skip (JANGAN HAPUS FIREBASE DI SINI)
-        if (!emoji) return;
+                            // ❌ kalau tidak ada mapping → skip (JANGAN HAPUS FIREBASE DI SINI)
+                            if (!emoji) return;
 
-        let span = document.createElement("span");
-        span.dataset.type = key;
+                            let span = document.createElement("span");
+                            span.dataset.type = key;
 
-        // FIX SAFE RENDER
-        if (emoji.type === "image") {
-          span.innerHTML = `
+                            // FIX SAFE RENDER
+                            if (emoji.type === "image") {
+                                span.innerHTML = `
             <img src="${emoji.url}" style="width:16px;height:16px;">
             <b>${val}</b>
           `;
-        } else {
-          span.innerHTML = `
+                            } else {
+                                span.innerHTML = `
             ${emoji.icon}
             <b>${val}</b>
           `;
-        }
+                            }
 
-        span.onclick = function () {
-          react(this, key);
-        };
+                            span.onclick = function () {
+                                react(this, key);
+                            };
 
-        list.appendChild(span);
-      });
-    });
-  });
-};
+                            list.appendChild(span);
+                        });
+                    });
+                });
+            };
         </script>
     </body>
 </html>
