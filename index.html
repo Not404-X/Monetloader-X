@@ -587,6 +587,9 @@
                     html += `
 <div class="box" data-name="${app.name.toLowerCase()}">
     <div class="title">
+    <div class="download-count" data-id="${app.name.replace(/\s+/g, "_")}">
+    ⬇ <span>0</span>
+</div>
     ${app.name}
     ${
         app.status === "new"
@@ -600,7 +603,7 @@
 
     <div class="btn-row">
         <div class="left-btns">
-            ${app.file ? `<a href="${app.file}" class="btn download-btn">⬇</a>` : ``}
+            ${app.file      ? `<a href="${app.file}" class="btn download-btn" onclick="addDownload('${app.name.replace(/\s+/g, "_")}')">⬇</a>`      : ``}
 
             ${
                 app.password
@@ -665,6 +668,23 @@
                 document.getElementById("download").style.display = "none";
                 document.getElementById("home").style.display = "block";
             }
+            
+            window.initDownloadCounter = function () {
+    document.querySelectorAll(".download-count").forEach(el => {
+        let id = el.dataset.id;
+        let span = el.querySelector("span");
+
+        let r = db.ref("downloads/" + id);
+
+r.on("value", snap => {
+    span.textContent = snap.val() || 0;
+});
+
+        onValue(r, snap => {
+            span.textContent = snap.val() || 0;
+        });
+    });
+};
 
             function openReview(link) {
                 window.open(link, "_blank");
@@ -869,28 +889,31 @@
             const db = firebase.database();
 
             window.react = function (el, type) {
-                let box = el.closest(".emoji-bar");
-                let id = box.dataset.id;
+    if (!navigator.onLine) {
+        alert("Koneksi mati, reaction tidak bisa dipakai");
+        return;
+    }
 
-                let key = "react_" + id + "_" + type;
-                let already = localStorage.getItem(key);
+    let box = el.closest(".emoji-bar");
+    let id = box.dataset.id;
 
-                let r = db.ref("reactions/" + id + "/" + type);
+    let key = "react_" + id + "_" + type;
+    let already = localStorage.getItem(key);
 
-                if (already) {
-                    r.transaction(current =>
-                        Math.max((current || 0) - 1, 0)
-                    ).then(() => {
-                        localStorage.removeItem(key);
-                        el.style.opacity = "1";
-                    });
-                } else {
-                    r.transaction(current => (current || 0) + 1).then(() => {
-                        localStorage.setItem(key, "1");
-                        el.style.opacity = "0.5";
-                    });
-                }
-            };
+    let r = db.ref("reactions/" + id + "/" + type);
+
+    if (already) {
+        r.transaction(current => Math.max((current || 0) - 1, 0)).then(() => {
+            localStorage.removeItem(key);
+            el.style.opacity = "1";
+        });
+    } else {
+        r.transaction(current => (current || 0) + 1).then(() => {
+            localStorage.setItem(key, "1");
+            el.style.opacity = "0.5";
+        });
+    }
+};
 
             // =====================
             // REALTIME UPDATE FIX
