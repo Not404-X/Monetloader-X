@@ -511,8 +511,8 @@
         app.status === "new"
             ? `<span class="badge new">NEW</span>`
             : app.status === "update"
-            ? `<span class="badge update">UPDATE</span>`
-            : ``
+              ? `<span class="badge update">UPDATE</span>`
+              : ``
     }
 </div>
     <div class="desc">${app.desc}</div>
@@ -544,7 +544,7 @@
 `;
                 });
                 const search = document.getElementById("search");
-search.oninput = null;
+                search.oninput = null;
                 search.addEventListener("input", () => {
                     let v = search.value.toLowerCase();
                     let cards = document.querySelectorAll("#downloadBox .box");
