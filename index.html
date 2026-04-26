@@ -828,106 +828,95 @@
             startSplash();
         </script>
 
-        <script type="module">
-            import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
-            import {
-                getDatabase,
-                ref,
-                onValue,
-                runTransaction
-            } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-database.js";
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
-            const firebaseConfig = {
-                apiKey: "AIzaSyAxl9TLl8uNb5c463aTz_JPtOAKJpgJ5kE",
-                authDomain: "database-x-64b77.firebaseapp.com",
-                databaseURL:
-                    "https://database-x-64b77-default-rtdb.asia-southeast1.firebasedatabase.app", // 🔥 WAJIB TAMBAH INI
-                projectId: "database-x-64b77",
-                storageBucket: "database-x-64b77.firebasestorage.app",
-                messagingSenderId: "1028544639743",
-                appId: "1:1028544639743:web:6e75bf0d63be58491192ca"
-            };
+<script>
+const firebaseConfig = {
+    apiKey: "AIzaSyAxl9TLl8uNb5c463aTz_JPtOAKJpgJ5kE",
+    authDomain: "database-x-64b77.firebaseapp.com",
+    databaseURL: "https://database-x-64b77-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "database-x-64b77",
+    storageBucket: "database-x-64b77.firebasestorage.app",
+    messagingSenderId: "1028544639743",
+    appId: "1:1028544639743:web:6e75bf0d63be58491192ca"
+};
 
-            const app = initializeApp(firebaseConfig);
-            const db = getDatabase(app);
+// =====================
+// INIT (COMPAT FIX)
+// =====================
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
 
-            // 🔥 klik emoji
-            window.react = function (el, type) {
-                let box = el.closest(".emoji-bar");
-                let id = box.dataset.id;
+window.react = function (el, type) {
+    let box = el.closest(".emoji-bar");
+    let id = box.dataset.id;
 
-                let key = "react_" + id + "_" + type;
-                let already = localStorage.getItem(key);
+    let key = "react_" + id + "_" + type;
+    let already = localStorage.getItem(key);
 
-                let r = ref(db, "reactions/" + id + "/" + type);
+    let r = db.ref("reactions/" + id + "/" + type);
 
-                if (already) {
-                    runTransaction(r, current =>
-                        Math.max((current || 0) - 1, 0)
-                    ).then(() => {
-                        localStorage.removeItem(key);
-                        el.style.opacity = "1";
-                    });
+    if (already) {
+        r.transaction(current => Math.max((current || 0) - 1, 0))
+        .then(() => {
+            localStorage.removeItem(key);
+            el.style.opacity = "1";
+        });
+    } else {
+        r.transaction(current => (current || 0) + 1)
+        .then(() => {
+            localStorage.setItem(key, "1");
+            el.style.opacity = "0.5";
+        });
+    }
+};
+
+// =====================
+// REALTIME UPDATE FIX
+// =====================
+window.initRealtime = function () {
+    document.querySelectorAll(".emoji-bar").forEach(bar => {
+        let id = bar.dataset.id;
+        let list = bar.querySelector(".emoji-list");
+
+        let r = db.ref("reactions/" + id);
+
+        r.on("value", snap => {
+            let data = snap.val() || {};
+            list.innerHTML = "";
+
+            Object.keys(data).forEach(key => {
+                let val = data[key];
+                if (!val || val <= 0) return;
+
+                let emoji = emojiSet.find(e => e.key === key);
+                if (!emoji) return;
+
+                let span = document.createElement("span");
+                span.dataset.type = key;
+
+                if (emoji.type === "image") {
+                    span.innerHTML = `
+                        <img src="${emoji.url}" style="width:16px;height:16px;">
+                        <b>${val}</b>
+                    `;
                 } else {
-                    runTransaction(r, current => (current || 0) + 1).then(
-                        () => {
-                            localStorage.setItem(key, "1");
-                            el.style.opacity = "0.5";
-                        }
-                    );
+                    span.innerHTML = `
+                        ${emoji.icon}
+                        <b>${val}</b>
+                    `;
                 }
-            };
 
-            // 📊 realtime update
-            window.initRealtime = function () {
-                document.querySelectorAll(".emoji-bar").forEach(bar => {
-                    let id = bar.dataset.id;
-                    let list = bar.querySelector(".emoji-list");
+                span.onclick = function () {
+                    react(this, key);
+                };
 
-                    let r = ref(db, "reactions/" + id);
-
-                    onValue(r, snap => {
-                        let data = snap.val() || {};
-
-                        list.innerHTML = "";
-
-                        Object.keys(data).forEach(key => {
-                            let val = data[key];
-
-                            // ❌ skip 0
-                            if (!val || val <= 0) return;
-
-                            // ✔ cari emoji
-                            let emoji = emojiSet.find(e => e.key === key);
-
-                            // ❌ kalau tidak ada mapping → skip (JANGAN HAPUS FIREBASE DI SINI)
-                            if (!emoji) return;
-
-                            let span = document.createElement("span");
-                            span.dataset.type = key;
-
-                            // FIX SAFE RENDER
-                            if (emoji.type === "image") {
-                                span.innerHTML = `
-            <img src="${emoji.url}" style="width:16px;height:16px;">
-            <b>${val}</b>
-          `;
-                            } else {
-                                span.innerHTML = `
-            ${emoji.icon}
-            <b>${val}</b>
-          `;
-                            }
-
-                            span.onclick = function () {
-                                react(this, key);
-                            };
-
-                            list.appendChild(span);
-                        });
-                    });
-                });
-            };
-        </script>
+                list.appendChild(span);
+            });
+        });
+    });
+};
+</script>
     </body>
 </html>
