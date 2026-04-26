@@ -1,0 +1,34 @@
+{
+  "emojiSet": [
+    {
+      "key": "bendera",
+      "type": "emoji",
+      "icon": "🇮🇩"
+    },
+    {
+      "key": "not404",
+      "type": "image",
+      "url": "https://media.tenor.com/H2WMUNkISDsAAAAj/ngakak-gambar-lucu.gif"
+    },
+    {
+      "key": "wek",
+      "type": "image",
+      "url": "https://cdn.pixabay.com/animation/2022/10/06/20/16/20-16-17-539_512.gif"
+    },
+    {
+      "key": "kabur",
+      "type": "image",
+      "url": "https://i.pinimg.com/originals/1b/ac/fc/1bacfc8c5042a267cd7ccfade781a6a3.gif"
+    },
+    {
+      "key": "lempar",
+      "type": "image",
+      "url": "https://i.pinimg.com/originals/ed/25/ca/ed25ca63f680bd066c916210fe0bc0f3.gif"
+    },
+    {
+      "key": "indo",
+      "type": "image",
+      "url": "https://caturdanar123.wordpress.com/wp-content/uploads/2014/06/foto-animasi-bergerak-6710_zps25aba06b.gif"
+    }
+  ]
+}
