@@ -122,6 +122,8 @@
             }
 
             .review-btn {
+position: relative;
+    z-index: 10;
                 margin-top: 8px;
                 background: rgba(0, 200, 255, 0.15);
                 color: #00d9ff;
@@ -231,6 +233,8 @@
             .download-btn,
             .password-btn,
             .icon-btn {
+              position: relative;
+    z-index: 10;
                 width: 40px;
                 height: 40px;
 
@@ -681,21 +685,21 @@
                 document.getElementById("loadingProgress").style.width =
                     percent + "%";
             }
-            
-            window.openLink = function(url) {
-    if (!url) return;
 
-    // fallback aman untuk WebView + browser
-    try {
-        if (window.Android && Android.openUrl) {
-            Android.openUrl(url);
-        } else {
-            location.href = url;
-        }
-    } catch (e) {
-        location.href = url;
-    }
-};
+            window.openLink = function (url) {
+                if (!url) return;
+
+                // fallback aman untuk WebView + browser
+                try {
+                    if (window.Android && Android.openUrl) {
+                        Android.openUrl(url);
+                    } else {
+                        location.href = url;
+                    }
+                } catch (e) {
+                    location.href = url;
+                }
+            };
 
             window.openEmoji = function (btn) {
                 let bar = btn.parentElement;
