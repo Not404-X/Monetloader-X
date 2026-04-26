@@ -601,7 +601,7 @@
             ${
                 app.password
                     ? `
-            <div class="btn password-btn" onclick="window.open('${app.password}','_blank')">🔐</div>
+            <div class="btn password-btn" onclick="openLink('${app.password}')">🔐</div>
             `
                     : ``
             }
@@ -615,7 +615,7 @@
         ${
             app.review
                 ? `
-        <div class="review-btn icon-btn" onclick="window.open('${app.review}','_blank')">
+        <div class="review-btn icon-btn" onclick="openLink('${app.review}')">
             >
         </div>
         `
@@ -681,6 +681,21 @@
                 document.getElementById("loadingProgress").style.width =
                     percent + "%";
             }
+            
+            window.openLink = function(url) {
+    if (!url) return;
+
+    // fallback aman untuk WebView + browser
+    try {
+        if (window.Android && Android.openUrl) {
+            Android.openUrl(url);
+        } else {
+            location.href = url;
+        }
+    } catch (e) {
+        location.href = url;
+    }
+};
 
             window.openEmoji = function (btn) {
                 let bar = btn.parentElement;
