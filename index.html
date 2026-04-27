@@ -893,25 +893,39 @@ cursor:pointer;
 
                 let html = "";
 
-                apps[type].forEach(app => {
-                    html += `
+apps[type].forEach(app => {
+
+    const id = app.id; // 🔥 PENTING: pakai ID FIX
+
+    html += `
 <div class="box card" data-name="${app.name.toLowerCase()}">
     <div class="title">
-    ${app.name}
-    ${
-        app.status === "new"
-            ? `<span class="badge new">NEW</span>`
-            : app.status === "update"
-              ? `<span class="badge update">UPDATE</span>`
-              : ``
-    }
-</div>
+        ${app.name}
+        ${
+            app.status === "new"
+                ? `<span class="badge new">NEW</span>`
+                : app.status === "update"
+                ? `<span class="badge update">UPDATE</span>`
+                : ``
+        }
+    </div>
+
     <div class="desc">${app.desc}</div>
 
+    <div class="desc">
+        Download: <span id="count-${id}">0</span>
+    </div>
+
     <div class="btn-row">
-    
+
         <div class="left-btns">
-            ${app.file ? `<a href="${app.file}" class="btn download-btn">⬇</a>` : ``}
+
+            ${app.file ? `
+            <div class="btn download-btn"
+                 onclick="handleDownload('${app.file}', '${id}')">
+                ⬇
+            </div>
+            ` : ``}
 
             ${
                 app.password
@@ -1713,6 +1727,36 @@ window.initRealtime=function(){
 
 };
         </script>
+        
+                <script>
+
+firebase.database().ref("downloads").on("value", snap => {
+    const data = snap.val() || {};
+
+    Object.keys(data).forEach(key => {
+        const el = document.getElementById("count-" + key);
+
+        if (el) {
+            el.innerText = data[key];
+        }
+    });
+});
+
+function handleDownload(file, id) {
+    if (!file || !id) return;
+
+    const ref = firebase.database().ref("downloads/" + id);
+
+    ref.transaction(current => {
+        return (current || 0) + 1;
+    });
+
+    // langsung download
+    window.open(file, "_blank");
+}
+
+</script>
+
         <div id="deleteMenu" class="delete-menu" style="display: none">
             <div class="delete-box">
                 <button onclick="confirmDelete()" class="delete-btn">
