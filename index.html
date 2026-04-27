@@ -1309,7 +1309,7 @@
 
                         div.innerHTML = `
 <span style="color:#aaa; font-size:12px; font-weight:500; margin-right:6px;">
-    @${c.name || "Guest"}
+    @${c.name}
 </span>
 <span style="color:#fff; font-size:13px;">
     ${c.text}
@@ -1407,11 +1407,11 @@
     localStorage.setItem("username", userName);  
 
     db.ref(`comments/${currentCardId}`).push({  
-        text: filterBadWords(text),  
-        userId: userId,  
-         // 🔥 auto @
-        time: Date.now()  
-    });  
+    text: filterBadWords(text),  
+    userId: userId,  
+    name: filterBadWords(userName), // 🔥 INI WAJIB ADA
+    time: Date.now()  
+});
 
     input.value = "";  
 };
