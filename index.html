@@ -988,7 +988,11 @@
 
         <script>
           function cleanText(text) {
-    return text.replace(/https?:\/\/\S+|www\.\S+/gi, "").trim();
+    return (text || "")
+        .replace(/https?:\/\/\S+/gi, "")
+        .replace(/www\.\S+/gi, "")
+        .replace(/[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g, "") // tambahan blok domain
+        .trim();
 }
             const firebaseConfig = {
                 apiKey: "AIzaSyAxl9TLl8uNb5c463aTz_JPtOAKJpgJ5kE",
@@ -1091,7 +1095,7 @@ div.style.gap = "3px";
 
                         div.innerHTML = `
     <div style="font-size:11px;color:#aaa;">
-        ${c.name || "Guest"}
+        ${cleanText(c.name || "Guest")}
     </div>
     <div style="font-size:13px;color:#fff;">
         ${c.text}
