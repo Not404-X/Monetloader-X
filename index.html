@@ -734,6 +734,24 @@
     align-items: center;
     justify-content: space-between;
 }
+#usernameInput {
+    width: 90px;              /* kecil & pas */
+    padding: 6px 8px;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+
+    background: rgba(255,255,255,0.08);
+    color: white;
+
+    font-size: 12px;
+}
+
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
         </style>
     </head>
 
@@ -819,16 +837,26 @@
         <div id="commentModal" class="comment-modal hidden">
             <div class="comment-panel">
                 <div class="comment-header">
-                    <span>Komentar</span>
-                    <button onclick="closeComments()">✕</button>
-                </div>
+    <span>Komentar</span>
+
+    <div style="display:flex; align-items:center; gap:6px;">
+        <input id="usernameInput" placeholder="Nama..." />
+        <button onclick="closeComments()">✕</button>
+    </div>
+</div>
 
                 <div id="commentList" class="comment-list-box"></div>
 
-                <div class="comment-input-box">
-                    <input id="commentInput" placeholder="Tulis komentar..." />
-                    <button onclick="sendModalComment()">Kirim</button>
-                </div>
+                <div class="comment-input-box" style="flex-direction: column;">
+    
+    
+
+    <div style="display:flex; gap:6px;">
+        <input id="commentInput" placeholder="Tulis komentar..." />
+        <button onclick="sendModalComment()">Kirim</button>
+    </div>
+
+</div>
             </div>
         </div>
 
@@ -1150,13 +1178,7 @@
         <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
         <script>
-            function cleanText(text) {
-                return (text || "")
-                    .replace(/https?:\/\/\S+/gi, "")
-                    .replace(/www\.\S+/gi, "")
-                    .replace(/[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g, "")
-                    .trim();
-            }
+
             const firebaseConfig = {
                 apiKey: "AIzaSyAxl9TLl8uNb5c463aTz_JPtOAKJpgJ5kE",
                 authDomain: "database-x-64b77.firebaseapp.com",
@@ -1257,12 +1279,12 @@
                         div.style.gap = "3px";
 
                         div.innerHTML = `
-    <span style="color:#aaa; font-size:12px; font-weight:500; margin-right:6px;">
-        ${cleanText(c.name || "Guest")}
-    </span>
-    <span style="color:#fff; font-size:13px;">
-        ${c.text}
-    </span>
+<span style="color:#aaa; font-size:12px; font-weight:500; margin-right:6px;">
+    ${c.name || "Guest"}
+</span>
+<span style="color:#fff; font-size:13px;">
+    ${c.text}
+</span>
 `;
 
                         let pressTimer;
@@ -1329,37 +1351,40 @@
             }
 
             window.sendModalComment = function () {
-                let input = document.getElementById("commentInput");
-                let text = input.value.trim();
-                if (!text || !currentCardId) return;
+    let input = document.getElementById("commentInput");
+    let nameInput = document.getElementById("usernameInput");
 
-                let userName = localStorage.getItem("username");
+    let text = input.value.trim();
+    let userName = nameInput.value.trim();
 
-                if (!userName) {
-                    userName = prompt("Masukkan nama kamu:");
+    if (!text || !currentCardId) return;
 
-                    if (!userName || userName.trim() === "") {
-                        userName = "Guest";
-                    }
+    if (!userName) userName = "Guest";
 
-                    localStorage.setItem("username", userName);
-                }
+    let userId = localStorage.getItem("uid");
+    if (!userId) {
+        userId = "u_" + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem("uid", userId);
+    }
+    localStorage.setItem("username", userName);
 
-                let userId = localStorage.getItem("uid");
-                if (!userId) {
-                    userId = "u_" + Math.random().toString(36).substr(2, 9);
-                    localStorage.setItem("uid", userId);
-                }
+    db.ref(`comments/${currentCardId}`).push({
+        text: text,
+        userId: userId,
+        name: userName,
+        time: Date.now()
+    });
 
-                db.ref(`comments/${currentCardId}`).push({
-                    text: cleanText(text),
-                    userId: userId,
-                    name: userName,
-                    time: Date.now()
-                });
+    input.value = "";
+};
 
-                input.value = "";
-            };
+// load nama lama
+document.addEventListener("DOMContentLoaded", () => {
+    let savedName = localStorage.getItem("username");
+    if (savedName) {
+        document.getElementById("usernameInput").value = savedName;
+    }
+});
 
             // =====================
             // REALTIME UPDATE FIX
