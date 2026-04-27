@@ -1268,52 +1268,53 @@
             let currentCardId = null;
 
             window.openComments = function (id) {
-    currentCardId = id;
+                currentCardId = id;
 
-    document.getElementById("commentModal").classList.remove("hidden");
+                document
+                    .getElementById("commentModal")
+                    .classList.remove("hidden");
 
-    // 🔥 LOAD NAMA DI SINI (bukan cuma DOMContentLoaded)
-    let savedName = localStorage.getItem("username");
-    let input = document.getElementById("usernameInput");
+                // 🔥 LOAD NAMA DI SINI (bukan cuma DOMContentLoaded)
+                let savedName = localStorage.getItem("username");
+                let input = document.getElementById("usernameInput");
 
-    if (savedName && input) {
-        input.value = savedName;
-    }
+                if (savedName && input) {
+                    input.value = savedName;
+                }
 
-    loadComments(id);
-};
+                loadComments(id);
+            };
 
             window.closeComments = function () {
                 document.getElementById("commentModal").classList.add("hidden");
             };
 
             function loadComments(id) {
-    let list = document.getElementById("commentList");
-    let myId = localStorage.getItem("uid");
+                let list = document.getElementById("commentList");
+                let myId = localStorage.getItem("uid");
 
-    db.ref(`comments/${id}`).on("value", snap => {
-        let data = snap.val() || {};
-        list.innerHTML = "";
+                db.ref(`comments/${id}`).on("value", snap => {
+                    let data = snap.val() || {};
+                    list.innerHTML = "";
 
-        // 🔥 LOOP KOMENTAR UTAMA
-        Object.entries(data).forEach(([key, c]) => {
+                    // 🔥 LOOP KOMENTAR UTAMA
+                    Object.entries(data).forEach(([key, c]) => {
+                        // ⛔ skip kalau ini reply
+                        if (c.parentId) return;
 
-            // ⛔ skip kalau ini reply
-            if (c.parentId) return;
+                        let div = document.createElement("div");
 
-            let div = document.createElement("div");
+                        div.style.padding = "10px";
+                        div.style.borderRadius = "10px";
+                        div.style.background = "rgba(255,255,255,0.06)";
+                        div.style.fontSize = "13px";
+                        div.style.color = "#fff";
+                        div.style.wordBreak = "break-word";
+                        div.style.display = "flex";
+                        div.style.flexDirection = "column";
+                        div.style.gap = "3px";
 
-            div.style.padding = "10px";
-            div.style.borderRadius = "10px";
-            div.style.background = "rgba(255,255,255,0.06)";
-            div.style.fontSize = "13px";
-            div.style.color = "#fff";
-            div.style.wordBreak = "break-word";
-            div.style.display = "flex";
-            div.style.flexDirection = "column";
-            div.style.gap = "3px";
-
-            div.innerHTML = `
+                        div.innerHTML = `
 <span style="color:#aaa; font-size:12px; font-weight:500;">
     @${c.name}
 </span>
@@ -1337,22 +1338,22 @@ style="
 </button>
 `;
 
-            // =========================
-            // 🔥 LOOP REPLY
-            // =========================
-            Object.entries(data).forEach(([rk, rc]) => {
-                if (rc.parentId === key) {
+                        // =========================
+                        // 🔥 LOOP REPLY
+                        // =========================
+                        Object.entries(data).forEach(([rk, rc]) => {
+                            if (rc.parentId === key) {
+                                let reply = document.createElement("div");
 
-                    let reply = document.createElement("div");
+                                reply.style.marginLeft = "20px";
+                                reply.style.marginTop = "6px";
+                                reply.style.padding = "6px";
+                                reply.style.borderRadius = "8px";
+                                reply.style.background =
+                                    "rgba(255,255,255,0.04)";
+                                reply.style.fontSize = "12px";
 
-                    reply.style.marginLeft = "20px";
-                    reply.style.marginTop = "6px";
-                    reply.style.padding = "6px";
-                    reply.style.borderRadius = "8px";
-                    reply.style.background = "rgba(255,255,255,0.04)";
-                    reply.style.fontSize = "12px";
-
-                    reply.innerHTML = `
+                                reply.innerHTML = `
 <span style="color:#aaa;">
     @${rc.name}
 </span>
@@ -1362,40 +1363,42 @@ style="
 </span>
 `;
 
-                    div.appendChild(reply);
-                }
-            });
+                                div.appendChild(reply);
+                            }
+                        });
 
-            // =========================
-            // LONG PRESS DELETE (TETAP ADA)
-            // =========================
-            let pressTimer;
+                        // =========================
+                        // LONG PRESS DELETE (TETAP ADA)
+                        // =========================
+                        let pressTimer;
 
-            function startPress(e) {
-                e.preventDefault();
-                e.stopPropagation();
+                        function startPress(e) {
+                            e.preventDefault();
+                            e.stopPropagation();
 
-                pressTimer = setTimeout(() => {
-                    handleDelete(c, id, key, myId);
-                }, 600);
+                            pressTimer = setTimeout(() => {
+                                handleDelete(c, id, key, myId);
+                            }, 600);
+                        }
+
+                        function cancelPress() {
+                            clearTimeout(pressTimer);
+                        }
+
+                        div.addEventListener("touchstart", startPress, {
+                            passive: false
+                        });
+                        div.addEventListener("touchend", cancelPress);
+                        div.addEventListener("touchmove", cancelPress);
+
+                        div.addEventListener("mousedown", startPress);
+                        div.addEventListener("mouseup", cancelPress);
+                        div.addEventListener("mouseleave", cancelPress);
+
+                        list.appendChild(div);
+                    });
+                });
             }
-
-            function cancelPress() {
-                clearTimeout(pressTimer);
-            }
-
-            div.addEventListener("touchstart", startPress, { passive: false });
-            div.addEventListener("touchend", cancelPress);
-            div.addEventListener("touchmove", cancelPress);
-
-            div.addEventListener("mousedown", startPress);
-            div.addEventListener("mouseup", cancelPress);
-            div.addEventListener("mouseleave", cancelPress);
-
-            list.appendChild(div);
-        });
-    });
-}
 
             function handleDelete(comment, cardId, commentId, myId) {
                 if (comment.userId !== myId) return;
@@ -1430,53 +1433,53 @@ style="
                 modal.style.display = "flex";
             }
 
-            window.sendModalComment = function () {  
-    let input = document.getElementById("commentInput");  
-    let nameInput = document.getElementById("usernameInput");  
+            window.sendModalComment = function () {
+                let input = document.getElementById("commentInput");
+                let nameInput = document.getElementById("usernameInput");
 
-    let text = input.value.trim();  
-    let userName = nameInput.value.trim();  
+                let text = input.value.trim();
+                let userName = nameInput.value.trim();
 
+                // 🔥 WAJIB ISI NAMA
+                if (!userName) {
+                    nameInput.style.border = "1px solid red";
+                    nameInput.placeholder = "Nama wajib diisi!";
+                    nameInput.focus();
+                    return;
+                }
 
-    // 🔥 WAJIB ISI NAMA
-    if (!userName) {
-        nameInput.style.border = "1px solid red";
-        nameInput.placeholder = "Nama wajib diisi!";
-        nameInput.focus();
-        return;
-    }
+                // 🔥 VALIDASI KOMENTAR
+                if (!text || !currentCardId) return;
 
-    // 🔥 VALIDASI KOMENTAR
-    if (!text || !currentCardId) return;  
+                let userId = localStorage.getItem("uid");
+                if (!userId) {
+                    userId = "u_" + Math.random().toString(36).substr(2, 9);
+                    localStorage.setItem("uid", userId);
+                }
 
-    let userId = localStorage.getItem("uid");  
-    if (!userId) {  
-        userId = "u_" + Math.random().toString(36).substr(2, 9);  
-        localStorage.setItem("uid", userId);  
-    }  
+                localStorage.setItem("username", userName);
 
-    localStorage.setItem("username", userName);  
+                db.ref(`comments/${currentCardId}`).push({
+                    text: filterBadWords(text),
+                    userId: userId,
+                    name: filterBadWords(userName),
+                    parentId: replyTo || null, // 🔥 ini kunci reply
+                    time: Date.now()
+                });
 
-    db.ref(`comments/${currentCardId}`).push({  
-    text: filterBadWords(text),  
-    userId: userId,  
-    name: filterBadWords(userName),  
-    parentId: replyTo || null, // 🔥 ini kunci reply
-    time: Date.now()  
-});
+                input.value = "";
+                replyTo = null;
+                document.getElementById("commentInput").placeholder =
+                    "Tulis komentar...";
+            };
 
-    input.value = "";  
-replyTo = null;
-document.getElementById("commentInput").placeholder = "Tulis komentar...";
-};
+            window.setReply = function (id, name) {
+                replyTo = id;
 
-window.setReply = function (id, name) {
-    replyTo = id;
-
-    let input = document.getElementById("commentInput");
-    input.placeholder = "Balas ke @" + name;
-    input.focus();
-};
+                let input = document.getElementById("commentInput");
+                input.placeholder = "Balas ke @" + name;
+                input.focus();
+            };
 
             // =====================
             // REALTIME UPDATE FIX
