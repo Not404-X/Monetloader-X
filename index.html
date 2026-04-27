@@ -857,7 +857,7 @@ cursor:pointer;
             let replyTo = null;
             let deleteTarget = null;
             let pressTimer = null;
-            let currentView = null; 
+            let currentView = null;
             let apps = {};
             let emojiSet = [];
 
@@ -1313,8 +1313,13 @@ function loadComments(cardId){
                 comments.push({id,...c});
             }
         });
+        
 
-        comments.forEach(c=>{      // 🔥 kalau lagi buka reply, hanya render 1 komentar     if(currentView && currentView !== c.id) return;
+        comments.forEach(c=>{    
+          
+        if (currentView && c.id !== currentView) {
+    return;
+}
 
             const div=document.createElement("div");
 
@@ -1441,6 +1446,7 @@ replyWrap.appendChild(rep);
 
 toggle.onclick = function (e) {
     e.stopPropagation();
+    
 
     if(currentView === c.id){
         currentView = null; // balik ke semua
@@ -1456,6 +1462,7 @@ if(currentView === c.id){
     toggle.innerHTML = "← Kembali";
 }else{
     replyWrap.style.display = "none";
+    toggle.innerHTML = `Lihat balasan (${childReplies.length})`;
 }
 
 div.appendChild(toggle);
@@ -1581,6 +1588,11 @@ window.sendModalComment=function(){
     input.value="";
     replyTo=null;
     input.placeholder="Tulis komentar...";
+    
+    setTimeout(()=>{
+    const list = document.getElementById("commentList");
+    list.scrollTop = list.scrollHeight;
+},100);
 };
 
 
