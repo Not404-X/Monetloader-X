@@ -1289,241 +1289,323 @@
                 document.getElementById("commentModal").classList.add("hidden");
             };
 
-            function loadComments(id) {
-                let list = document.getElementById("commentList");
-    let myId = localStorage.getItem("uid");
+            
 
-    // 🔥 STOP listener lama dulu
-    db.ref(`comments/${id}`).off();
+// =======================
+// LOAD COMMENTS
+// =======================
+function loadComments(cardId){
+    const list = document.getElementById("commentList");
+    const myId = localStorage.getItem("uid");
 
-    db.ref(`comments/${id}`).on("value", snap => {
-        let data = snap.val() || {};
-        list.innerHTML = "";
+    db.ref(`comments/${cardId}`).off();
 
-        Object.entries(data).forEach(([key, c]) => {
-            if (c.parentId) return;
+    db.ref(`comments/${cardId}`).on("value",(snap)=>{
+        const data = snap.val() || {};
+        list.innerHTML="";
 
-            let div = document.createElement("div");
+        const comments = [];
+        const replies = {};
 
-                        div.style.padding = "10px";
-                        div.style.borderRadius = "10px";
-                        div.style.background = "rgba(255,255,255,0.06)";
-                        div.style.fontSize = "13px";
-                        div.style.color = "#fff";
-                        div.style.wordBreak = "break-word";
-                        div.style.display = "flex";
-                        div.style.flexDirection = "column";
-                        div.style.gap = "3px";
+        // pisah parent & reply (lebih hemat)
+        Object.entries(data).forEach(([id,c])=>{
+            if(c.parentId){
+                if(!replies[c.parentId]) replies[c.parentId]=[];
+                replies[c.parentId].push({id,...c});
+            }else{
+                comments.push({id,...c});
+            }
+        });
 
-                        div.innerHTML = `
-<span style="color:#aaa; font-size:12px; font-weight:500;">
-    @${c.name}
+        comments.forEach(c=>{
+
+            const div=document.createElement("div");
+
+            div.style.cssText=`
+                padding:10px;
+                border-radius:10px;
+                background:rgba(255,255,255,.06);
+                font-size:13px;
+                color:#fff;
+                word-break:break-word;
+                display:flex;
+                flex-direction:column;
+                gap:4px;
+            `;
+
+            div.innerHTML=`
+<span style="color:#aaa;font-size:12px;font-weight:500;">
+@${c.name}
 </span>
 
-<span style="color:#fff;">
-    ${c.text}
-</span>
+<span>${c.text}</span>
 
-<button 
-onclick="event.stopPropagation(); setReply('${key}', '${c.name}')"
-ontouchstart="event.stopPropagation()"
-ontouchend="event.stopPropagation()"
+<button class="reply-btn"
 style="
-    background:none;
-    border:none;
-    color:#00d9ff;
-    font-size:11px;
-    cursor:pointer;
+background:none;
+border:none;
+color:#00d9ff;
+font-size:11px;
+cursor:pointer;
+text-align:left;
+padding:0;
 ">
-    Balas
+Balas
 </button>
 `;
 
-                        // =========================
-                        // 🔥 LOOP REPLY
-                        // =========================
-                        Object.entries(data).forEach(([rk, rc]) => {
-                            if (rc.parentId === key) {
-                                let reply = document.createElement("div");
+// tombol balas fix
+const replyBtn = div.querySelector(".reply-btn");
 
-                                reply.style.marginLeft = "20px";
-                                reply.style.marginTop = "6px";
-                                reply.style.padding = "6px";
-                                reply.style.borderRadius = "8px";
-                                reply.style.background =
-                                    "rgba(255,255,255,0.04)";
-                                reply.style.fontSize = "12px";
+replyBtn.onclick=(e)=>{
+e.stopPropagation();
+setReply(c.id,c.name);
+};
 
-                                reply.innerHTML = `
-<span style="color:#aaa;">
-    @${rc.name}
-</span>
+replyBtn.ontouchstart=(e)=>{
+e.stopPropagation();
+};
 
-<span style="color:#ddd;">
-    ${rc.text}
-</span>
+
+// render replies
+const childReplies = replies[c.id] || [];
+
+if(childReplies.length){
+
+let opened=false;
+
+const toggle=document.createElement("span");
+toggle.innerHTML=`Lihat balasan (${childReplies.length})`;
+
+toggle.style.cssText=`
+display:block;
+margin-top:6px;
+color:#00d9ff;
+font-size:11px;
+cursor:pointer;
 `;
 
-                                div.appendChild(reply);
-                            }
-                        });
+const replyWrap=document.createElement("div");
+replyWrap.style.display="none";
 
-                        // =========================
-                        // LONG PRESS DELETE (TETAP ADA)
-                        // =========================
-                        let pressTimer;
 
-                        function startPress(e) {
-                            e.preventDefault();
-                            e.stopPropagation();
+childReplies.forEach(r=>{
 
-                            pressTimer = setTimeout(() => {
-                                handleDelete(c, id, key, myId);
-                            }, 600);
-                        }
+const rep=document.createElement("div");
 
-                        function cancelPress() {
-                            clearTimeout(pressTimer);
-                        }
+rep.style.cssText=`
+margin-left:20px;
+margin-top:6px;
+padding:6px;
+border-radius:8px;
+background:rgba(255,255,255,.04);
+font-size:12px;
+`;
 
-                        div.addEventListener("touchstart", startPress, {
-                            passive: false
-                        });
-                        div.addEventListener("touchend", cancelPress);
-                        div.addEventListener("touchmove", cancelPress);
+rep.innerHTML=`
+<span style="color:#aaa;">@${r.name}</span><br>
+<span style="color:#ddd;">${r.text}</span>
+`;
 
-                        div.addEventListener("mousedown", startPress);
-                        div.addEventListener("mouseup", cancelPress);
-                        div.addEventListener("mouseleave", cancelPress);
+replyWrap.appendChild(rep);
 
-                        list.appendChild(div);
-                    });
-                });
-            }
+});
 
-            function handleDelete(comment, cardId, commentId, myId) {
-                if (comment.userId !== myId) return;
 
-                deleteTarget = { cardId, commentId };
+toggle.onclick=function(e){
+e.stopPropagation();
 
-                document
-                    .getElementById("deleteMenu")
-                    .classList.remove("hidden");
-            }
-            function confirmDelete() {
-                if (!deleteTarget) return;
+opened=!opened;
 
-                db.ref(
-                    `comments/${deleteTarget.cardId}/${deleteTarget.commentId}`
-                ).remove();
+replyWrap.style.display=opened ? "block" : "none";
 
-                closeDeleteMenu();
-            }
+toggle.innerHTML=opened
+? "Sembunyikan balasan"
+: "Lihat balasan ("+childReplies.length+")";
+};
 
-            function closeDeleteMenu() {
-                deleteTarget = null;
-                document.getElementById("deleteMenu").style.display = "none";
-            }
+div.appendChild(toggle);
+div.appendChild(replyWrap);
 
-            function handleDelete(comment, cardId, commentId, myId) {
-                if (comment.userId !== myId) return;
+}
 
-                deleteTarget = { cardId, commentId };
 
-                let modal = document.getElementById("deleteMenu");
-                modal.style.display = "flex";
-            }
+            // ==================
+            // LONG PRESS DELETE
+            // ==================
+            let pressTimer;
 
-            window.sendModalComment = function () {
-                let input = document.getElementById("commentInput");
-                let nameInput = document.getElementById("usernameInput");
+            const startPress=(e)=>{
 
-                let text = input.value.trim();
-                let userName = nameInput.value.trim();
+if(
+e.target.classList.contains("reply-btn") ||
+e.target.innerText.includes("balasan")
+){
+return;
+}
 
-                // 🔥 WAJIB ISI NAMA
-                if (!userName) {
-                    nameInput.style.border = "1px solid red";
-                    nameInput.placeholder = "Nama wajib diisi!";
-                    nameInput.focus();
-                    return;
-                }
+pressTimer=setTimeout(()=>{
+handleDelete(c,cardId,c.id,myId);
+},600);
 
-                // 🔥 VALIDASI KOMENTAR
-                if (!text || !currentCardId) return;
+};
 
-                let userId = localStorage.getItem("uid");
-                if (!userId) {
-                    userId = "u_" + Math.random().toString(36).substr(2, 9);
-                    localStorage.setItem("uid", userId);
-                }
-
-                localStorage.setItem("username", userName);
-
-                db.ref(`comments/${currentCardId}`).push({
-                    text: filterBadWords(text),
-                    userId: userId,
-                    name: filterBadWords(userName),
-                    parentId: replyTo || null, // 🔥 ini kunci reply
-                    time: Date.now()
-                });
-
-                input.value = "";
-                replyTo = null;
-                document.getElementById("commentInput").placeholder =
-                    "Tulis komentar...";
+            const cancelPress=()=>{
+                clearTimeout(pressTimer);
             };
 
-            window.setReply = function (id, name) {
-                replyTo = id;
+            [
+                "touchstart",
+                "mousedown"
+            ].forEach(ev=>{
+                div.addEventListener("touchstart", startPress);
+            });
 
-                let input = document.getElementById("commentInput");
-                input.placeholder = "Balas ke @" + name;
-                input.focus();
-            };
+            [
+                "touchend",
+                "touchmove",
+                "mouseup",
+                "mouseleave"
+            ].forEach(ev=>{
+                div.addEventListener(ev,cancelPress);
+            });
 
-            // =====================
-            // REALTIME UPDATE FIX
-            // =====================
-            window.initRealtime = function () {
-                document.querySelectorAll(".emoji-bar").forEach(bar => {
-                    let id = bar.dataset.id;
-                    let list = bar.querySelector(".emoji-list");
+            list.appendChild(div);
+        });
 
-                    db.ref(`reactions/${id}`).on("value", snap => {
-                        let data = snap.val() || {};
-                        list.innerHTML = "";
+    });
+}
 
-                        Object.keys(data).forEach(key => {
-                            let users = data[key] || {};
-                            let count = Object.keys(users).length;
 
-                            if (count <= 0) return;
+// =======================
+// DELETE
+// =======================
+function handleDelete(comment,cardId,commentId,myId){
+    if(comment.userId!==myId) return;
 
-                            let emoji = emojiSet.find(e => e.key === key);
-                            if (!emoji) return;
+    deleteTarget={cardId,commentId};
 
-                            let span = document.createElement("span");
-                            span.dataset.type = key;
+    document.getElementById("deleteMenu").style.display="flex";
+}
 
-                            span.innerHTML = `
-                    ${
-                        emoji.url
-                            ? `<img src="${emoji.url}" style="width:16px;height:16px;">`
-                            : emoji.icon
-                    }
-                    <b>${count}</b>
-                `;
+function confirmDelete(){
+    if(!deleteTarget) return;
 
-                            span.onclick = function () {
-                                react(this, key);
-                            };
+    db.ref(
+      `comments/${deleteTarget.cardId}/${deleteTarget.commentId}`
+    ).remove();
 
-                            list.appendChild(span);
-                        });
-                    });
-                });
-            };
+    closeDeleteMenu();
+}
+
+function closeDeleteMenu(){
+    deleteTarget=null;
+    document.getElementById("deleteMenu").style.display="none";
+}
+
+
+// =======================
+// SEND COMMENT
+// =======================
+window.sendModalComment=function(){
+
+    const input=document.getElementById("commentInput");
+    const nameInput=document.getElementById("usernameInput");
+
+    const text=input.value.trim();
+    const userName=nameInput.value.trim();
+
+    if(!userName){
+        nameInput.style.border="1px solid red";
+        nameInput.placeholder="Nama wajib diisi!";
+        nameInput.focus();
+        return;
+    }
+
+    if(!text || !currentCardId) return;
+
+    let userId=localStorage.getItem("uid");
+
+    if(!userId){
+        userId="u_"+Math.random().toString(36).slice(2,9);
+        localStorage.setItem("uid",userId);
+    }
+
+    localStorage.setItem("username",userName);
+
+    db.ref(`comments/${currentCardId}`).push({
+        text:filterBadWords(text),
+        userId,
+        name:filterBadWords(userName),
+        parentId:replyTo || null,
+        time:Date.now()
+    });
+
+    input.value="";
+    replyTo=null;
+    input.placeholder="Tulis komentar...";
+};
+
+
+// =======================
+// REPLY
+// =======================
+window.setReply=function(id,name){
+    replyTo=id;
+
+    const input=document.getElementById("commentInput");
+    input.placeholder=`Balas ke @${name}`;
+    input.focus();
+};
+
+
+// =======================
+// REALTIME REACTION
+// =======================
+window.initRealtime=function(){
+
+ document.querySelectorAll(".emoji-bar").forEach(bar=>{
+
+   const id=bar.dataset.id;
+   const list=bar.querySelector(".emoji-list");
+
+   db.ref(`reactions/${id}`).on("value",(snap)=>{
+
+      const data=snap.val() || {};
+      list.innerHTML="";
+
+      Object.keys(data).forEach(type=>{
+
+         const count=Object.keys(data[type]||{}).length;
+         if(!count) return;
+
+         const emoji=emojiSet.find(e=>e.key===type);
+         if(!emoji) return;
+
+         const span=document.createElement("span");
+
+         span.dataset.type=type;
+
+         span.innerHTML=`
+            ${
+             emoji.url
+             ? `<img src="${emoji.url}" style="width:16px;height:16px">`
+             : emoji.icon
+            }
+            <b>${count}</b>
+         `;
+
+         span.onclick=()=>react(span,type);
+
+         list.appendChild(span);
+
+      });
+
+   });
+
+ });
+
+};
         </script>
         <div id="deleteMenu" class="delete-menu" style="display: none">
             <div class="delete-box">
