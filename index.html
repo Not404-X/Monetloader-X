@@ -987,11 +987,11 @@
         <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
         <script>
-          function cleanText(text) {
+function cleanText(text) {
     return (text || "")
         .replace(/https?:\/\/\S+/gi, "")
         .replace(/www\.\S+/gi, "")
-        .replace(/[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g, "") // tambahan blok domain
+        .replace(/[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g, "")
         .trim();
 }
             const firebaseConfig = {
@@ -1173,7 +1173,12 @@ div.style.gap = "3px";
                 let userName = localStorage.getItem("username");
 
 if (!userName) {
-    userName = "User_" + Math.floor(Math.random() * 9999);
+    userName = prompt("Masukkan nama kamu:");
+    
+    if (!userName || userName.trim() === "") {
+        userName = "Guest";
+    }
+
     localStorage.setItem("username", userName);
 }
 
