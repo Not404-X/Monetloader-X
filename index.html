@@ -1267,13 +1267,20 @@
             let currentCardId = null;
 
             window.openComments = function (id) {
-                currentCardId = id;
-                document
-                    .getElementById("commentModal")
-                    .classList.remove("hidden");
+    currentCardId = id;
 
-                loadComments(id);
-            };
+    document.getElementById("commentModal").classList.remove("hidden");
+
+    // 🔥 LOAD NAMA DI SINI (bukan cuma DOMContentLoaded)
+    let savedName = localStorage.getItem("username");
+    let input = document.getElementById("usernameInput");
+
+    if (savedName && input) {
+        input.value = savedName;
+    }
+
+    loadComments(id);
+};
 
             window.closeComments = function () {
                 document.getElementById("commentModal").classList.add("hidden");
@@ -1372,15 +1379,13 @@
                 modal.style.display = "flex";
             }
 
-            window.sendModalComment = function () {
-    let input = document.getElementById("commentInput");
-    let nameInput = document.getElementById("usernameInput");
+            window.sendModalComment = function () {  
+    let input = document.getElementById("commentInput");  
+    let nameInput = document.getElementById("usernameInput");  
 
-    let text = input.value.trim();
-    let userName = nameInput.value.trim();
+    let text = input.value.trim();  
+    let userName = nameInput.value.trim();  
 
-    // hapus @ dobel
-    userName = userName.replace(/^@+/, "");
 
     // 🔥 WAJIB ISI NAMA
     if (!userName) {
@@ -1390,25 +1395,25 @@
         return;
     }
 
-    // 🔥 WAJIB ISI KOMENTAR
-    if (!text || !currentCardId) return;
+    // 🔥 VALIDASI KOMENTAR
+    if (!text || !currentCardId) return;  
 
-    let userId = localStorage.getItem("uid");
-    if (!userId) {
-        userId = "u_" + Math.random().toString(36).substr(2, 9);
-        localStorage.setItem("uid", userId);
-    }
+    let userId = localStorage.getItem("uid");  
+    if (!userId) {  
+        userId = "u_" + Math.random().toString(36).substr(2, 9);  
+        localStorage.setItem("uid", userId);  
+    }  
 
-    localStorage.setItem("username", userName);
+    localStorage.setItem("username", userName);  
 
-    db.ref(`comments/${currentCardId}`).push({
-        text: filterBadWords(text),
-        userId: userId,
-        name: filterBadWords(userName),
-        time: Date.now()
-    });
+    db.ref(`comments/${currentCardId}`).push({  
+        text: filterBadWords(text),  
+        userId: userId,  
+         // 🔥 auto @
+        time: Date.now()  
+    });  
 
-    input.value = "";
+    input.value = "";  
 };
 
             // =====================
