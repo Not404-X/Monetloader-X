@@ -1364,16 +1364,18 @@ e.stopPropagation();
 
 
 // render replies
+const commentList = document.getElementById("commentList");
+
 const childReplies = replies[c.id] || [];
 
-if(childReplies.length){
+if (childReplies.length) {
 
-let opened=false;
+let opened = false;
 
-const toggle=document.createElement("span");
-toggle.innerHTML=`Lihat balasan (${childReplies.length})`;
+const toggle = document.createElement("span");
+toggle.innerHTML = `Lihat balasan (${childReplies.length})`;
 
-toggle.style.cssText=`
+toggle.style.cssText = `
 display:block;
 margin-top:6px;
 color:#00d9ff;
@@ -1381,43 +1383,100 @@ font-size:11px;
 cursor:pointer;
 `;
 
-const replyWrap=document.createElement("div");
-replyWrap.style.display="none";
+const replyWrap = document.createElement("div");
+replyWrap.style.cssText = `
+display:none;
+margin-top:10px;
+padding-left:10px;
+border-left:2px solid rgba(255,255,255,.1);
+`;
 
+childReplies.forEach(r => {
 
-childReplies.forEach(r=>{
+const rep = document.createElement("div");
 
-const rep=document.createElement("div");
-
-rep.style.cssText=`
-margin-left:20px;
-margin-top:6px;
-padding:6px;
+rep.style.cssText = `
+margin-top:10px;
+padding:8px;
 border-radius:8px;
 background:rgba(255,255,255,.04);
-font-size:12px;
+display:flex;
+flex-direction:column;
+gap:4px;
 `;
 
-rep.innerHTML=`
-<span style="color:#aaa;">@${r.name}</span><br>
-<span style="color:#ddd;">${r.text}</span>
+rep.innerHTML = `
+<span style="color:#aaa;font-size:12px;font-weight:500;">
+@${r.name}
+</span>
+
+<span style="color:#ddd;font-size:13px;">
+${r.text}
+</span>
+
+<button class="reply-child-btn"
+style="
+background:none;
+border:none;
+color:#00d9ff;
+font-size:11px;
+cursor:pointer;
+padding:0;
+text-align:left;
+width:max-content;
+">
+Balas
+</button>
 `;
+
+rep.querySelector(".reply-child-btn").onclick = (e) => {
+e.stopPropagation();
+setReply(r.id, r.name);
+};
 
 replyWrap.appendChild(rep);
 
 });
 
-
-toggle.onclick=function(e){
+toggle.onclick = function (e) {
 e.stopPropagation();
 
-opened=!opened;
+opened = !opened;
 
-replyWrap.style.display=opened ? "block" : "none";
+if (opened) {
 
-toggle.innerHTML=opened
-? "Sembunyikan balasan"
-: "Lihat balasan ("+childReplies.length+")";
+// 🔥 FOCUS MODE (SEMUA KOMENTAR LAIN HILANG)
+Array.from(commentList.children).forEach(el => {
+if (el !== div) {
+el.style.display = "none";
+}
+});
+
+// tampilkan reply
+replyWrap.style.display = "block";
+
+toggle.innerHTML = "← Kembali";
+
+if (typeof replyBtn !== "undefined") {
+replyBtn.style.display = "none";
+}
+
+} else {
+
+// 🔄 RESTORE SEMUA KOMENTAR
+Array.from(commentList.children).forEach(el => {
+el.style.display = "";
+});
+
+replyWrap.style.display = "none";
+
+toggle.innerHTML = `Lihat balasan (${childReplies.length})`;
+
+if (typeof replyBtn !== "undefined") {
+replyBtn.style.display = "inline";
+}
+}
+
 };
 
 div.appendChild(toggle);
