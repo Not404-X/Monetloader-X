@@ -1322,7 +1322,9 @@
     ${c.text}
 </span>
 
-<button onclick="setReply('${key}', '${c.name}')" style="
+<button onclick="event.stopPropagation(); setReply('${key}', '${c.name}')"
+ontouchstart="event.stopPropagation()"
+style="
     background:none;
     border:none;
     color:#00d9ff;
