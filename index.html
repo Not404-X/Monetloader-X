@@ -1173,9 +1173,7 @@ div.style.gap = "3px";
                 let userName = localStorage.getItem("username");
 
 if (!userName) {
-    userName = prompt("Masukkan nama kamu:");
-    if (!userName) userName = "Guest";
-
+    userName = "User_" + Math.floor(Math.random() * 9999);
     localStorage.setItem("username", userName);
 }
 
