@@ -1171,28 +1171,28 @@
         <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
         <script>
-          const badWords = [
-    "anjing",
+            const badWords = [
+    "anjing", "anj",
     "babi",
-    "kontol",
-    "memek",
-    "bangsat",
-    "tolol",
-    "goblok",
-    "ngentot",
+    "kontol", "kntl",
+    "memek", "mmk",
+    "bangsat", "bngst",
+    "tolol", "tll",
+    "goblok", "gblk",
+    "ngentot", "ngntt",
     "asu"
 ];
 
-function filterBadWords(text) {
-    let result = text;
+            function filterBadWords(text) {
+                let result = text;
 
-    badWords.forEach(word => {
-        let regex = new RegExp(word, "gi");
-        result = result.replace(regex, "*".repeat(word.length));
-    });
+                badWords.forEach(word => {
+                    let regex = new RegExp(word, "gi");
+                    result = result.replace(regex, "*".repeat(word.length));
+                });
 
-    return result;
-}
+                return result;
+            }
 
             const firebaseConfig = {
                 apiKey: "AIzaSyAxl9TLl8uNb5c463aTz_JPtOAKJpgJ5kE",
@@ -1371,7 +1371,7 @@ function filterBadWords(text) {
 
                 let text = input.value.trim();
                 let userName = nameInput.value.trim();
-                
+
                 userName = userName.replace(/^@+/, "");
 
                 if (!text || !currentCardId) return;
