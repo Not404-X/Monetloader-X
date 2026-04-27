@@ -1730,16 +1730,27 @@ window.initRealtime=function(){
         
                 <script>
 
-firebase.database().ref("downloads").on("value", snap => {
-    const data = snap.val() || {};
+const ref = firebase.database().ref("downloads");
 
+function renderCounts(data) {
     Object.keys(data).forEach(key => {
         const el = document.getElementById("count-" + key);
-
         if (el) {
             el.innerText = data[key];
         }
     });
+}
+
+// 🔥 1. AMBIL DATA AWAL (INI YANG KAMU KURANG)
+ref.once("value", snap => {
+    const data = snap.val() || {};
+    renderCounts(data);
+});
+
+// 🔥 2. REALTIME UPDATE
+ref.on("value", snap => {
+    const data = snap.val() || {};
+    renderCounts(data);
 });
 
 function handleDownload(file, id) {
