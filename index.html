@@ -868,28 +868,51 @@
             firebase.initializeApp(firebaseConfig);
             const db = firebase.database();
 
-            window.react = function (el, type) {
+            window.react = function (el, emojiKey) {
                 let box = el.closest(".emoji-bar");
-                let id = box.dataset.id;
+                let cardId = box.dataset.id;
 
-                let key = "react_" + id + "_" + type;
-                let already = localStorage.getItem(key);
-
-                let r = db.ref("reactions/" + id + "/" + type);
-
-                if (already) {
-                    r.transaction(current =>
-                        Math.max((current || 0) - 1, 0)
-                    ).then(() => {
-                        localStorage.removeItem(key);
-                        el.style.opacity = "1";
-                    });
-                } else {
-                    r.transaction(current => (current || 0) + 1).then(() => {
-                        localStorage.setItem(key, "1");
-                        el.style.opacity = "0.5";
-                    });
+                // pakai ID sederhana (kalau belum login, fallback device)
+                let userId = localStorage.getItem("uid");
+                if (!userId) {
+                    userId = "u_" + Math.random().toString(36).substr(2, 9);
+                    localStorage.setItem("uid", userId);
                 }
+
+                let ref = db.ref(`reactions/${cardId}`);
+
+                ref.once("value").then(snap => {
+                    let data = snap.val() || {};
+
+                    let currentEmoji = null;
+
+                    // cari emoji yang sudah dipakai user ini
+                    Object.keys(data).forEach(e => {
+                        if (data[e] && data[e][userId]) {
+                            currentEmoji = e;
+                        }
+                    });
+
+                    // kalau klik emoji yang sama → REMOVE (toggle off)
+                    if (currentEmoji === emojiKey) {
+                        db.ref(
+                            `reactions/${cardId}/${emojiKey}/${userId}`
+                        ).remove();
+                        return;
+                    }
+
+                    // kalau sudah ada reaction → pindahkan (Discord behavior)
+                    if (currentEmoji) {
+                        db.ref(
+                            `reactions/${cardId}/${currentEmoji}/${userId}`
+                        ).remove();
+                    }
+
+                    // set reaction baru
+                    db.ref(`reactions/${cardId}/${emojiKey}/${userId}`).set(
+                        true
+                    );
+                });
             };
 
             // =====================
@@ -900,15 +923,15 @@
                     let id = bar.dataset.id;
                     let list = bar.querySelector(".emoji-list");
 
-                    let r = db.ref("reactions/" + id);
-
-                    r.on("value", snap => {
+                    db.ref(`reactions/${id}`).on("value", snap => {
                         let data = snap.val() || {};
                         list.innerHTML = "";
 
                         Object.keys(data).forEach(key => {
-                            let val = data[key];
-                            if (!val || val <= 0) return;
+                            let users = data[key] || {};
+                            let count = Object.keys(users).length;
+
+                            if (count <= 0) return;
 
                             let emoji = emojiSet.find(e => e.key === key);
                             if (!emoji) return;
@@ -916,17 +939,14 @@
                             let span = document.createElement("span");
                             span.dataset.type = key;
 
-                            if (emoji.type === "image") {
-                                span.innerHTML = `
-                        <img src="${emoji.url}" style="width:16px;height:16px;">
-                        <b>${val}</b>
-                    `;
-                            } else {
-                                span.innerHTML = `
-                        ${emoji.icon}
-                        <b>${val}</b>
-                    `;
-                            }
+                            span.innerHTML = `
+                    ${
+                        emoji.url
+                            ? `<img src="${emoji.url}" style="width:16px;height:16px;">`
+                            : emoji.icon
+                    }
+                    <b>${count}</b>
+                `;
 
                             span.onclick = function () {
                                 react(this, key);
