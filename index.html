@@ -1399,49 +1399,85 @@ border-left:2px solid rgba(255,255,255,.1);
 
 childReplies.forEach(r => {
 
-const rep = document.createElement("div");
+    const rep = document.createElement("div");
 
-rep.style.cssText = `
-margin-top:10px;
-padding:8px;
-border-radius:8px;
-background:rgba(255,255,255,.04);
-display:flex;
-flex-direction:column;
-gap:4px;
-`;
+    rep.style.cssText = `
+        margin-top:10px;
+        padding:8px;
+        border-radius:8px;
+        background:rgba(255,255,255,.04);
+        display:flex;
+        flex-direction:column;
+        gap:4px;
+    `;
 
-rep.innerHTML = `
-<span style="color:#aaa;font-size:12px;font-weight:500;">
-@${r.name}
-</span>
+    rep.innerHTML = `
+        <span style="color:#aaa;font-size:12px;font-weight:500;">
+            @${r.name}
+        </span>
 
-<span style="color:#ddd;font-size:13px;">
-${r.text}
-</span>
+        <span style="color:#ddd;font-size:13px;">
+            ${r.text}
+        </span>
 
-<button class="reply-child-btn"
-style="
-background:none;
-border:none;
-color:#00d9ff;
-font-size:11px;
-cursor:pointer;
-padding:0;
-text-align:left;
-width:max-content;
-">
-Balas
-</button>
-`;
+        <button class="reply-child-btn"
+        style="
+            background:none;
+            border:none;
+            color:#00d9ff;
+            font-size:11px;
+            cursor:pointer;
+            padding:0;
+            text-align:left;
+            width:max-content;
+        ">
+            Balas
+        </button>
+    `;
 
-rep.querySelector(".reply-child-btn").onclick = (e) => {
-    e.stopPropagation();
-    setReply(c.id, r.name); // 🔥 balik ke parent utama
-};
+    // =========================
+    // BALAS (NORMAL CLICK)
+    // =========================
+    rep.querySelector(".reply-child-btn").addEventListener("click", (e) => {
+        e.stopPropagation();
+        setReply(c.id, r.name);
+    });
 
-replyWrap.appendChild(rep);
+    // =========================
+    // LONG PRESS DELETE
+    // =========================
+    let pressTimerReply;
+    let isLongPress = false;
 
+    const startPressReply = (e) => {
+
+        if (e.target.classList.contains("reply-child-btn")) return;
+
+        isLongPress = false;
+
+        const myId = localStorage.getItem("uid");
+
+        pressTimerReply = setTimeout(() => {
+            isLongPress = true;
+
+            handleDelete(r, cardId, r.id, myId);
+
+        }, 600);
+    };
+
+    const cancelPressReply = () => {
+        clearTimeout(pressTimerReply);
+    };
+
+    ["touchstart", "mousedown"].forEach(ev => {
+        rep.addEventListener(ev, startPressReply);
+    });
+
+    ["touchend", "touchmove", "mouseup", "mouseleave"].forEach(ev => {
+        rep.addEventListener(ev, cancelPressReply);
+    });
+
+    replyWrap.appendChild(rep);
 });
 
 toggle.onclick = function (e) {
@@ -1532,11 +1568,24 @@ function handleDelete(comment,cardId,commentId,myId){
 function confirmDelete(){
     if(!deleteTarget) return;
 
-    db.ref(
-      `comments/${deleteTarget.cardId}/${deleteTarget.commentId}`
-    ).remove();
+    const { cardId, commentId } = deleteTarget;
 
-    closeDeleteMenu();
+    // 🔥 ambil semua komentar
+    db.ref(`comments/${cardId}`).once("value").then(snap => {
+        const data = snap.val() || {};
+
+        // 1. hapus parent
+        db.ref(`comments/${cardId}/${commentId}`).remove();
+
+        // 2. hapus semua reply yang punya parentId ini
+        Object.entries(data).forEach(([id, c]) => {
+            if (c.parentId === commentId) {
+                db.ref(`comments/${cardId}/${id}`).remove();
+            }
+        });
+
+        closeDeleteMenu();
+    });
 }
 
 function closeDeleteMenu(){
