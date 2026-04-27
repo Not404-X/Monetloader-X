@@ -460,211 +460,205 @@
                 background: rgba(255, 255, 255, 0.1);
                 transform: scale(1.2);
             }
-    /* =========================
+            /* =========================
    ICON BUTTON (GLASS MODERN)
 ========================= */
-.icon-btn {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
+            .icon-btn {
+                width: 36px;
+                height: 36px;
+                border-radius: 50%;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+                display: flex;
+                align-items: center;
+                justify-content: center;
 
-    cursor: pointer;
+                cursor: pointer;
 
-    /* glass effect */
-    background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(8px);
+                /* glass effect */
+                background: rgba(255, 255, 255, 0.08);
+                backdrop-filter: blur(8px);
 
-    border: 1px solid rgba(255,255,255,0.12);
+                border: 1px solid rgba(255, 255, 255, 0.12);
 
-    box-shadow:
-        0 4px 12px rgba(0,0,0,0.35),
-        inset 0 1px 0 rgba(255,255,255,0.05);
+                box-shadow:
+                    0 4px 12px rgba(0, 0, 0, 0.35),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.05);
 
-    transition: all 0.2s ease;
-}
+                transition: all 0.2s ease;
+            }
 
-/* hover smooth */
-.icon-btn:hover {
-    transform: translateY(-2px) scale(1.05);
-    background: rgba(255,255,255,0.12);
-}
+            /* hover smooth */
+            .icon-btn:hover {
+                transform: translateY(-2px) scale(1.05);
+                background: rgba(255, 255, 255, 0.12);
+            }
 
-/* klik feel */
-.icon-btn:active {
-    transform: scale(0.95);
-}
+            /* klik feel */
+            .icon-btn:active {
+                transform: scale(0.95);
+            }
 
-
-/* =========================
+            /* =========================
    COMMENT MODAL (MODERN SHEET)
 ========================= */
-.comment-modal {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 65%;
+            .comment-modal {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                height: 65%;
 
-    background: rgba(20, 20, 30, 0.85);
-    backdrop-filter: blur(14px);
+                background: rgba(20, 20, 30, 0.85);
+                backdrop-filter: blur(14px);
 
-    border-top-left-radius: 18px;
-    border-top-right-radius: 18px;
+                border-top-left-radius: 18px;
+                border-top-right-radius: 18px;
 
-    border-top: 1px solid rgba(255,255,255,0.08);
+                border-top: 1px solid rgba(255, 255, 255, 0.08);
 
-    z-index: 9999;
+                z-index: 9999;
 
-    display: flex;
-    flex-direction: column;
+                display: flex;
+                flex-direction: column;
 
-    box-shadow: 0 -10px 40px rgba(0,0,0,0.6);
-}
+                box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.6);
+            }
 
-
-/* =========================
+            /* =========================
    PANEL
 ========================= */
-.comment-panel {
-    padding: 12px;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-}
+            .comment-panel {
+                padding: 12px;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+            }
 
-
-/* =========================
+            /* =========================
    HEADER
 ========================= */
-.comment-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+            .comment-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
 
-    color: #fff;
-    font-weight: 600;
+                color: #fff;
+                font-weight: 600;
 
-    margin-bottom: 10px;
-}
+                margin-bottom: 10px;
+            }
 
-/* tombol close modern */
-.comment-header button {
-    background: rgba(255,255,255,0.08);
-    border: none;
-    color: #fff;
+            /* tombol close modern */
+            .comment-header button {
+                background: rgba(255, 255, 255, 0.08);
+                border: none;
+                color: #fff;
 
-    width: 28px;
-    height: 28px;
+                width: 28px;
+                height: 28px;
 
-    border-radius: 50%;
-    cursor: pointer;
-}
+                border-radius: 50%;
+                cursor: pointer;
+            }
 
-
-/* =========================
+            /* =========================
    LIST
 ========================= */
-.comment-list-box {
-    flex: 1;
-    overflow-y: auto;
+            .comment-list-box {
+                flex: 1;
+                overflow-y: auto;
 
-    padding: 6px;
+                padding: 6px;
 
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
 
-/* tiap komentar */
-.comment-list-box div {
-    background: rgba(255,255,255,0.06);
-    border-radius: 10px;
+            /* tiap komentar */
+            .comment-list-box div {
+                background: rgba(255, 255, 255, 0.06);
+                border-radius: 10px;
 
-    padding: 8px;
+                padding: 8px;
 
-    font-size: 13px;
+                font-size: 13px;
 
-    border: 1px solid rgba(255,255,255,0.05);
-}
+                border: 1px solid rgba(255, 255, 255, 0.05);
+            }
 
-
-/* =========================
+            /* =========================
    INPUT
 ========================= */
-.comment-input-box {
-    display: flex;
-    gap: 6px;
-    margin-top: 8px;
-}
+            .comment-input-box {
+                display: flex;
+                gap: 6px;
+                margin-top: 8px;
+            }
 
-/* input glass */
-.comment-input-box input {
-    flex: 1;
+            /* input glass */
+            .comment-input-box input {
+                flex: 1;
 
-    padding: 10px;
+                padding: 10px;
 
-    border-radius: 10px;
-    border: none;
-    outline: none;
+                border-radius: 10px;
+                border: none;
+                outline: none;
 
-    background: rgba(255,255,255,0.08);
-    color: white;
+                background: rgba(255, 255, 255, 0.08);
+                color: white;
 
-    font-size: 13px;
-}
+                font-size: 13px;
+            }
 
-/* tombol kirim */
-.comment-input-box button {
-    padding: 10px 14px;
+            /* tombol kirim */
+            .comment-input-box button {
+                padding: 10px 14px;
 
-    border-radius: 10px;
-    border: none;
+                border-radius: 10px;
+                border: none;
 
-    background: linear-gradient(135deg, #6d28d9, #a78bfa);
-    color: white;
+                background: linear-gradient(135deg, #6d28d9, #a78bfa);
+                color: white;
 
-    cursor: pointer;
+                cursor: pointer;
 
-    font-weight: 600;
+                font-weight: 600;
 
-    transition: 0.2s;
-}
+                transition: 0.2s;
+            }
 
-.comment-input-box button:hover {
-    transform: scale(1.05);
-}
+            .comment-input-box button:hover {
+                transform: scale(1.05);
+            }
 
-/* khusus tombol komentar */
-.comment-btn {
-    background: none !important;
-    border: none;
-    box-shadow: none;
+            /* khusus tombol komentar */
+            .comment-btn {
+                background: none !important;
+                border: none;
+                box-shadow: none;
 
-    width: auto;
-    height: auto;
+                width: auto;
+                height: auto;
 
-    padding: 0;
-    border-radius: 0;
+                padding: 0;
+                border-radius: 0;
 
-    font-size: 16px;
-}
+                font-size: 16px;
+            }
 
-/* hover biar tetap ada efek */
-.comment-btn:hover {
-    transform: scale(1.1);
-}
+            /* hover biar tetap ada efek */
+            .comment-btn:hover {
+                transform: scale(1.1);
+            }
 
-
-/* =========================
+            /* =========================
    UTIL
 ========================= */
-.hidden {
-    display: none;
-}
+            .hidden {
+                display: none;
+            }
             .delete-menu {
                 position: fixed;
                 inset: 0;
@@ -714,44 +708,44 @@
             }
             /* ====== TAMBAHAN UNTUK COMMENT FLOAT ====== */
 
-.card {
-    position: relative;
-    overflow: visible; /* biar tombol bisa keluar dikit */
-}
+            .card {
+                position: relative;
+                overflow: visible; /* biar tombol bisa keluar dikit */
+            }
 
-.icon
+            .icon
 /* tombol kanan (💬 di atas, > di bawah) */
 .right-btns {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    align-items: center;
-}
+                display: flex;
+                flex-direction: column;
+                gap: 6px;
+                align-items: center;
+            }
 
-/* biar spacing kiri-kanan seimbang */
-.btn-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-#usernameInput {
-    width: 90px;              /* kecil & pas */
-    padding: 6px 8px;
-    border-radius: 8px;
-    border: none;
-    outline: none;
+            /* biar spacing kiri-kanan seimbang */
+            .btn-row {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+            #usernameInput {
+                width: 90px; /* kecil & pas */
+                padding: 6px 8px;
+                border-radius: 8px;
+                border: none;
+                outline: none;
 
-    background: rgba(255,255,255,0.08);
-    color: white;
+                background: rgba(255, 255, 255, 0.08);
+                color: white;
 
-    font-size: 12px;
-}
+                font-size: 12px;
+            }
 
-.comment-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
+            .comment-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
         </style>
     </head>
 
@@ -837,26 +831,25 @@
         <div id="commentModal" class="comment-modal hidden">
             <div class="comment-panel">
                 <div class="comment-header">
-    <span>Komentar</span>
+                    <span>Komentar</span>
 
-    <div style="display:flex; align-items:center; gap:6px;">
-        <input id="usernameInput" placeholder="Nama..." />
-        <button onclick="closeComments()">✕</button>
-    </div>
-</div>
+                    <div style="display: flex; align-items: center; gap: 6px">
+                        <input id="usernameInput" placeholder="Nama..." />
+                        <button onclick="closeComments()">✕</button>
+                    </div>
+                </div>
 
                 <div id="commentList" class="comment-list-box"></div>
 
-                <div class="comment-input-box" style="flex-direction: column;">
-    
-    
-
-    <div style="display:flex; gap:6px;">
-        <input id="commentInput" placeholder="Tulis komentar..." />
-        <button onclick="sendModalComment()">Kirim</button>
-    </div>
-
-</div>
+                <div class="comment-input-box" style="flex-direction: column">
+                    <div style="display: flex; gap: 6px">
+                        <input
+                            id="commentInput"
+                            placeholder="Tulis komentar..."
+                        />
+                        <button onclick="sendModalComment()">Kirim</button>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -1178,7 +1171,6 @@
         <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
         <script>
-
             const firebaseConfig = {
                 apiKey: "AIzaSyAxl9TLl8uNb5c463aTz_JPtOAKJpgJ5kE",
                 authDomain: "database-x-64b77.firebaseapp.com",
@@ -1351,40 +1343,40 @@
             }
 
             window.sendModalComment = function () {
-    let input = document.getElementById("commentInput");
-    let nameInput = document.getElementById("usernameInput");
+                let input = document.getElementById("commentInput");
+                let nameInput = document.getElementById("usernameInput");
 
-    let text = input.value.trim();
-    let userName = nameInput.value.trim();
+                let text = input.value.trim();
+                let userName = nameInput.value.trim();
 
-    if (!text || !currentCardId) return;
+                if (!text || !currentCardId) return;
 
-    if (!userName) userName = "Guest";
+                if (!userName) userName = "Guest";
 
-    let userId = localStorage.getItem("uid");
-    if (!userId) {
-        userId = "u_" + Math.random().toString(36).substr(2, 9);
-        localStorage.setItem("uid", userId);
-    }
-    localStorage.setItem("username", userName);
+                let userId = localStorage.getItem("uid");
+                if (!userId) {
+                    userId = "u_" + Math.random().toString(36).substr(2, 9);
+                    localStorage.setItem("uid", userId);
+                }
+                localStorage.setItem("username", userName);
 
-    db.ref(`comments/${currentCardId}`).push({
-        text: text,
-        userId: userId,
-        name: userName,
-        time: Date.now()
-    });
+                db.ref(`comments/${currentCardId}`).push({
+                    text: text,
+                    userId: userId,
+                    name: userName,
+                    time: Date.now()
+                });
 
-    input.value = "";
-};
+                input.value = "";
+            };
 
-// load nama lama
-document.addEventListener("DOMContentLoaded", () => {
-    let savedName = localStorage.getItem("username");
-    if (savedName) {
-        document.getElementById("usernameInput").value = savedName;
-    }
-});
+            // load nama lama
+            document.addEventListener("DOMContentLoaded", () => {
+                let savedName = localStorage.getItem("username");
+                if (savedName) {
+                    document.getElementById("usernameInput").value = savedName;
+                }
+            });
 
             // =====================
             // REALTIME UPDATE FIX
