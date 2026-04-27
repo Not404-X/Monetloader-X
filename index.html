@@ -857,6 +857,7 @@ cursor:pointer;
             let replyTo = null;
             let deleteTarget = null;
             let pressTimer = null;
+            let currentView = null; 
             let apps = {};
             let emojiSet = [];
 
@@ -1313,7 +1314,7 @@ function loadComments(cardId){
             }
         });
 
-        comments.forEach(c=>{
+        comments.forEach(c=>{      // 🔥 kalau lagi buka reply, hanya render 1 komentar     if(currentView && currentView !== c.id) return;
 
             const div=document.createElement("div");
 
@@ -1430,8 +1431,8 @@ Balas
 `;
 
 rep.querySelector(".reply-child-btn").onclick = (e) => {
-e.stopPropagation();
-setReply(r.id, r.name);
+    e.stopPropagation();
+    setReply(c.id, r.name); // 🔥 balik ke parent utama
 };
 
 replyWrap.appendChild(rep);
@@ -1439,45 +1440,23 @@ replyWrap.appendChild(rep);
 });
 
 toggle.onclick = function (e) {
-e.stopPropagation();
+    e.stopPropagation();
 
-opened = !opened;
+    if(currentView === c.id){
+        currentView = null; // balik ke semua
+    }else{
+        currentView = c.id; // masuk reply mode
+    }
 
-if (opened) {
-
-// 🔥 FOCUS MODE (SEMUA KOMENTAR LAIN HILANG)
-Array.from(commentList.children).forEach(el => {
-if (el !== div) {
-el.style.display = "none";
-}
-});
-
-// tampilkan reply
-replyWrap.style.display = "block";
-
-toggle.innerHTML = "← Kembali";
-
-if (typeof replyBtn !== "undefined") {
-replyBtn.style.display = "none";
-}
-
-} else {
-
-// 🔄 RESTORE SEMUA KOMENTAR
-Array.from(commentList.children).forEach(el => {
-el.style.display = "";
-});
-
-replyWrap.style.display = "none";
-
-toggle.innerHTML = `Lihat balasan (${childReplies.length})`;
-
-if (typeof replyBtn !== "undefined") {
-replyBtn.style.display = "inline";
-}
-}
-
+    loadComments(currentCardId); // 🔥 render ulang sesuai state
 };
+
+if(currentView === c.id){
+    replyWrap.style.display = "block";
+    toggle.innerHTML = "← Kembali";
+}else{
+    replyWrap.style.display = "none";
+}
 
 div.appendChild(toggle);
 div.appendChild(replyWrap);
@@ -1596,6 +1575,9 @@ window.sendModalComment=function(){
         time:Date.now()
     });
 
+    // 🔥 RESET UI (INI FIX UTAMA)
+    resetCommentView();
+
     input.value="";
     replyTo=null;
     input.placeholder="Tulis komentar...";
@@ -1612,6 +1594,14 @@ window.setReply=function(id,name){
     input.placeholder=`Balas ke @${name}`;
     input.focus();
 };
+
+function resetCommentView(){
+    const commentList = document.getElementById("commentList");
+
+    Array.from(commentList.children).forEach(el => {
+        el.style.display = "";
+    });
+}
 
 
 // =======================
