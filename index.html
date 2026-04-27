@@ -460,6 +460,73 @@
                 background: rgba(255, 255, 255, 0.1);
                 transform: scale(1.2);
             }
+            .icon-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+.comment-modal {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 60%;
+    background: #111;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+}
+
+.comment-panel {
+    padding: 10px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    color: white;
+    margin-bottom: 10px;
+}
+
+.comment-list-box {
+    flex: 1;
+    overflow-y: auto;
+    font-size: 13px;
+    color: #ddd;
+}
+
+.comment-input-box {
+    display: flex;
+    gap: 6px;
+}
+
+.comment-input-box input {
+    flex: 1;
+    padding: 8px;
+    border-radius: 8px;
+    border: none;
+}
+
+.comment-input-box button {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+}
+
+.hidden {
+    display: none;
+}
         </style>
     </head>
 
@@ -541,6 +608,22 @@
             <!-- INI SATU-SATUNYA CONTAINER -->
             <div id="downloadBox"></div>
         </div>
+        
+        <div id="commentModal" class="comment-modal hidden">
+    <div class="comment-panel">
+        <div class="comment-header">
+            <span>Komentar</span>
+            <button onclick="closeComments()">✕</button>
+        </div>
+
+        <div id="commentList" class="comment-list-box"></div>
+
+        <div class="comment-input-box">
+            <input id="commentInput" placeholder="Tulis komentar..." />
+            <button onclick="sendModalComment()">Kirim</button>
+        </div>
+    </div>
+</div>
 
         <script>
             window.onerror = function (msg, url, line) {
@@ -599,6 +682,9 @@
     <div class="desc">${app.desc}</div>
 
     <div class="btn-row">
+    <div class="icon-btn" onclick="openComments('${app.name.replace(/\s+/g,'_')}')">
+    💬
+</div>
         <div class="left-btns">
             ${app.file ? `<a href="${app.file}" class="btn download-btn">⬇</a>` : ``}
 
@@ -914,6 +1000,93 @@
                     );
                 });
             };
+            let currentCardId = null;
+
+window.openComments = function(id) {
+    currentCardId = id;
+    document.getElementById("commentModal").classList.remove("hidden");
+
+    loadComments(id);
+};
+
+window.closeComments = function() {
+    document.getElementById("commentModal").classList.add("hidden");
+};
+
+function loadComments(id) {
+    let list = document.getElementById("commentList");
+
+    let myId = localStorage.getItem("uid");
+
+    db.ref(`comments/${id}`).on("value", snap => {
+        let data = snap.val() || {};
+        list.innerHTML = "";
+
+        Object.entries(data).forEach(([key, c]) => {
+            let div = document.createElement("div");
+
+            div.style.padding = "6px";
+            div.style.borderBottom = "1px solid rgba(255,255,255,0.05)";
+            div.style.cursor = "pointer";
+
+            div.innerHTML = `<span>${c.text}</span>`;
+
+            // 🔥 LONG PRESS EVENT
+            let pressTimer;
+
+            div.addEventListener("touchstart", () => {
+                pressTimer = setTimeout(() => {
+                    handleDelete(c, id, key, myId);
+                }, 600); // 0.6 detik tahan
+            });
+
+            div.addEventListener("touchend", () => {
+                clearTimeout(pressTimer);
+            });
+
+            div.addEventListener("mousedown", () => {
+                pressTimer = setTimeout(() => {
+                    handleDelete(c, id, key, myId);
+                }, 600);
+            });
+
+            div.addEventListener("mouseup", () => {
+                clearTimeout(pressTimer);
+            });
+
+            list.appendChild(div);
+        });
+    });
+}
+
+function handleDelete(comment, cardId, commentId, myId) {
+    if (comment.userId !== myId) return; // cuma pemilik
+
+    let confirmDelete = confirm("Hapus komentar ini?");
+    if (!confirmDelete) return;
+
+    db.ref(`comments/${cardId}/${commentId}`).remove();
+}
+
+window.sendModalComment = function() {
+    let input = document.getElementById("commentInput");
+    let text = input.value.trim();
+    if (!text || !currentCardId) return;
+
+    let userId = localStorage.getItem("uid");
+    if (!userId) {
+        userId = "u_" + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem("uid", userId);
+    }
+
+    db.ref(`comments/${currentCardId}`).push({
+        text: text,
+        userId: userId,
+        time: Date.now()
+    });
+
+    input.value = "";
+};
 
             // =====================
             // REALTIME UPDATE FIX
