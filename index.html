@@ -499,13 +499,13 @@
             }
 
             .comment-list-box {
-    flex: 1;
-    overflow-y: auto;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
+                flex: 1;
+                overflow-y: auto;
+                padding: 10px;
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+            }
 
             .comment-input-box {
                 display: flex;
@@ -987,13 +987,13 @@
         <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
         <script>
-function cleanText(text) {
-    return (text || "")
-        .replace(/https?:\/\/\S+/gi, "")
-        .replace(/www\.\S+/gi, "")
-        .replace(/[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g, "")
-        .trim();
-}
+            function cleanText(text) {
+                return (text || "")
+                    .replace(/https?:\/\/\S+/gi, "")
+                    .replace(/www\.\S+/gi, "")
+                    .replace(/[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g, "")
+                    .trim();
+            }
             const firebaseConfig = {
                 apiKey: "AIzaSyAxl9TLl8uNb5c463aTz_JPtOAKJpgJ5kE",
                 authDomain: "database-x-64b77.firebaseapp.com",
@@ -1084,14 +1084,14 @@ function cleanText(text) {
                         let div = document.createElement("div");
 
                         div.style.padding = "10px";
-div.style.borderRadius = "10px";
-div.style.background = "rgba(255,255,255,0.06)";
-div.style.fontSize = "13px";
-div.style.color = "#fff";
-div.style.wordBreak = "break-word";
-div.style.display = "flex";
-div.style.flexDirection = "column";
-div.style.gap = "3px";
+                        div.style.borderRadius = "10px";
+                        div.style.background = "rgba(255,255,255,0.06)";
+                        div.style.fontSize = "13px";
+                        div.style.color = "#fff";
+                        div.style.wordBreak = "break-word";
+                        div.style.display = "flex";
+                        div.style.flexDirection = "column";
+                        div.style.gap = "3px";
 
                         div.innerHTML = `
     <div style="font-size:11px;color:#aaa;">
@@ -1169,18 +1169,18 @@ div.style.gap = "3px";
                 let input = document.getElementById("commentInput");
                 let text = input.value.trim();
                 if (!text || !currentCardId) return;
-                
+
                 let userName = localStorage.getItem("username");
 
-if (!userName) {
-    userName = prompt("Masukkan nama kamu:");
-    
-    if (!userName || userName.trim() === "") {
-        userName = "Guest";
-    }
+                if (!userName) {
+                    userName = prompt("Masukkan nama kamu:");
 
-    localStorage.setItem("username", userName);
-}
+                    if (!userName || userName.trim() === "") {
+                        userName = "Guest";
+                    }
+
+                    localStorage.setItem("username", userName);
+                }
 
                 let userId = localStorage.getItem("uid");
                 if (!userId) {
@@ -1189,11 +1189,11 @@ if (!userName) {
                 }
 
                 db.ref(`comments/${currentCardId}`).push({
-    text: cleanText(text),
-    userId: userId,
-    name: userName,
-    time: Date.now()
-});
+                    text: cleanText(text),
+                    userId: userId,
+                    name: userName,
+                    time: Date.now()
+                });
 
                 input.value = "";
             };
