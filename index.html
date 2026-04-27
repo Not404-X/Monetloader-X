@@ -388,20 +388,20 @@
                 display: flex;
                 align-items: center;
                 gap: 6px;
+
                 flex-wrap: wrap;
                 max-width: 100%;
             }
 
-            /* LIST EMOJI */
+            /* 🔥 bikin emoji rapi 3 per baris */
             .emoji-list {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 6px;
-                align-items: center;
+                display: grid;
+                grid-template-columns: repeat(3, auto);
+                gap: 3px;
             }
 
-            /* ITEM EMOJI */
-            .emoji-list span {
+            /* emoji style */
+            .emoji-bar span {
                 background: rgba(255, 255, 255, 0.08);
                 padding: 4px 8px;
                 border-radius: 10px;
@@ -416,11 +416,11 @@
                 transition: 0.15s;
             }
 
-            .emoji-list span:hover {
+            .emoji-bar span:hover {
                 transform: scale(1.05);
             }
 
-            /* BUTTON + */
+            /* tombol + tetap di kanan */
             .emoji-add {
                 width: 28px;
                 height: 28px;
@@ -433,8 +433,6 @@
                 cursor: pointer;
                 flex-shrink: 0;
             }
-
-            /* PICKER */
             .emoji-picker {
                 position: absolute;
                 background: #18181b;
@@ -449,19 +447,13 @@
                 max-width: 220px;
             }
 
-            /* EMOJI DALAM PICKER */
             .emoji-picker span {
-                font-size: 18px;
+                font-size: 18px; /* 🔥 ini yang bikin tidak gede */
                 text-align: center;
                 cursor: pointer;
-
-                padding: 6px;
+                padding: 4px;
                 border-radius: 6px;
-
                 transition: 0.15s;
-                display: flex;
-                align-items: center;
-                justify-content: center;
             }
 
             .emoji-picker span:hover {
@@ -877,38 +869,27 @@
             const db = firebase.database();
 
             window.react = function (el, type) {
-                if (!navigator.onLine) return;
-
                 let box = el.closest(".emoji-bar");
                 let id = box.dataset.id;
 
-                let lockKey = "react_lock_" + id;
-                let current = localStorage.getItem(lockKey);
+                let key = "react_" + id + "_" + type;
+                let already = localStorage.getItem(key);
 
-                let refReact = db.ref("reactions/" + id + "/" + type);
+                let r = db.ref("reactions/" + id + "/" + type);
 
-                // kalau sudah pernah react
-                if (current) {
-                    if (current === type) {
-                        // unreact (toggle off)
-                        refReact
-                            .transaction(v => Math.max((v || 0) - 1, 0))
-                            .then(() => {
-                                localStorage.removeItem(lockKey);
-                                el.style.opacity = "1";
-                            });
-                    }
-                    // ❌ kalau beda emoji: DIAM SAJA (tidak ada alert)
-                    return;
-                }
-
-                // first time react
-                refReact
-                    .transaction(v => (v || 0) + 1)
-                    .then(() => {
-                        localStorage.setItem(lockKey, type);
+                if (already) {
+                    r.transaction(current =>
+                        Math.max((current || 0) - 1, 0)
+                    ).then(() => {
+                        localStorage.removeItem(key);
+                        el.style.opacity = "1";
+                    });
+                } else {
+                    r.transaction(current => (current || 0) + 1).then(() => {
+                        localStorage.setItem(key, "1");
                         el.style.opacity = "0.5";
                     });
+                }
             };
 
             // =====================
