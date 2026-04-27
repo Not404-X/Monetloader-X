@@ -877,35 +877,39 @@
             const db = firebase.database();
 
             window.react = function (el, type) {
-    if (!navigator.onLine) return;
+                if (!navigator.onLine) return;
 
-    let box = el.closest(".emoji-bar");
-    let id = box.dataset.id;
+                let box = el.closest(".emoji-bar");
+                let id = box.dataset.id;
 
-    let lockKey = "react_lock_" + id;
-    let current = localStorage.getItem(lockKey);
+                let lockKey = "react_lock_" + id;
+                let current = localStorage.getItem(lockKey);
 
-    let refReact = db.ref("reactions/" + id + "/" + type);
+                let refReact = db.ref("reactions/" + id + "/" + type);
 
-    // kalau sudah pernah react
-    if (current) {
-        if (current === type) {
-            // unreact (toggle off)
-            refReact.transaction(v => Math.max((v || 0) - 1, 0)).then(() => {
-                localStorage.removeItem(lockKey);
-                el.style.opacity = "1";
-            });
-        }
-        // ❌ kalau beda emoji: DIAM SAJA (tidak ada alert)
-        return;
-    }
+                // kalau sudah pernah react
+                if (current) {
+                    if (current === type) {
+                        // unreact (toggle off)
+                        refReact
+                            .transaction(v => Math.max((v || 0) - 1, 0))
+                            .then(() => {
+                                localStorage.removeItem(lockKey);
+                                el.style.opacity = "1";
+                            });
+                    }
+                    // ❌ kalau beda emoji: DIAM SAJA (tidak ada alert)
+                    return;
+                }
 
-    // first time react
-    refReact.transaction(v => (v || 0) + 1).then(() => {
-        localStorage.setItem(lockKey, type);
-        el.style.opacity = "0.5";
-    });
-};
+                // first time react
+                refReact
+                    .transaction(v => (v || 0) + 1)
+                    .then(() => {
+                        localStorage.setItem(lockKey, type);
+                        el.style.opacity = "0.5";
+                    });
+            };
 
             // =====================
             // REALTIME UPDATE FIX
