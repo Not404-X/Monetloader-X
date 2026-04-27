@@ -1171,6 +1171,29 @@
         <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
         <script>
+          const badWords = [
+    "anjing",
+    "babi",
+    "kontol",
+    "memek",
+    "bangsat",
+    "tolol",
+    "goblok",
+    "ngentot",
+    "asu"
+];
+
+function filterBadWords(text) {
+    let result = text;
+
+    badWords.forEach(word => {
+        let regex = new RegExp(word, "gi");
+        result = result.replace(regex, "*".repeat(word.length));
+    });
+
+    return result;
+}
+
             const firebaseConfig = {
                 apiKey: "AIzaSyAxl9TLl8uNb5c463aTz_JPtOAKJpgJ5kE",
                 authDomain: "database-x-64b77.firebaseapp.com",
@@ -1348,6 +1371,8 @@
 
                 let text = input.value.trim();
                 let userName = nameInput.value.trim();
+                
+                userName = userName.replace(/^@+/, "");
 
                 if (!text || !currentCardId) return;
 
@@ -1361,9 +1386,9 @@
                 localStorage.setItem("username", userName);
 
                 db.ref(`comments/${currentCardId}`).push({
-                    text: text,
+                    text: filterBadWords(text),
                     userId: userId,
-                    name: userName,
+                    name: filterBadWords(userName),
                     time: Date.now()
                 });
 
