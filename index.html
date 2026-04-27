@@ -1291,18 +1291,19 @@
 
             function loadComments(id) {
                 let list = document.getElementById("commentList");
-                let myId = localStorage.getItem("uid");
+    let myId = localStorage.getItem("uid");
 
-                db.ref(`comments/${id}`).on("value", snap => {
-                    let data = snap.val() || {};
-                    list.innerHTML = "";
+    // 🔥 STOP listener lama dulu
+    db.ref(`comments/${id}`).off();
 
-                    // 🔥 LOOP KOMENTAR UTAMA
-                    Object.entries(data).forEach(([key, c]) => {
-                        // ⛔ skip kalau ini reply
-                        if (c.parentId) return;
+    db.ref(`comments/${id}`).on("value", snap => {
+        let data = snap.val() || {};
+        list.innerHTML = "";
 
-                        let div = document.createElement("div");
+        Object.entries(data).forEach(([key, c]) => {
+            if (c.parentId) return;
+
+            let div = document.createElement("div");
 
                         div.style.padding = "10px";
                         div.style.borderRadius = "10px";
