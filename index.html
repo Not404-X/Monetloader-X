@@ -527,6 +527,49 @@
             .hidden {
                 display: none;
             }
+            .delete-menu {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.35);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    z-index: 99999;
+}
+
+.delete-box {
+    width: 100%;
+    background: #1a1a1a;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    padding: 12px;
+
+    animation: slideUp 0.2s ease;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+
+.delete-btn {
+    width: 100%;
+    padding: 10px;
+    background: red;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    margin-bottom: 6px;
+}
+
+.cancel-btn {
+    width: 100%;
+    padding: 10px;
+    background: rgba(255,255,255,0.08);
+    color: white;
+    border: none;
+    border-radius: 10px;
+}
         </style>
     </head>
 
@@ -630,7 +673,8 @@
                 console.log("JS ERROR:", msg, line);
                 return false;
             };
-
+let deleteTarget = null;
+let pressTimer = null;
             let apps = {};
             let emojiSet = [];
 
@@ -1016,60 +1060,78 @@
             };
 
             function loadComments(id) {
-                let list = document.getElementById("commentList");
+    let list = document.getElementById("commentList");
+    let myId = localStorage.getItem("uid");
 
-                let myId = localStorage.getItem("uid");
+    db.ref(`comments/${id}`).on("value", snap => {
+        let data = snap.val() || {};
+        list.innerHTML = "";
 
-                db.ref(`comments/${id}`).on("value", snap => {
-                    let data = snap.val() || {};
-                    list.innerHTML = "";
+        Object.entries(data).forEach(([key, c]) => {
+            let div = document.createElement("div");
 
-                    Object.entries(data).forEach(([key, c]) => {
-                        let div = document.createElement("div");
+            div.style.padding = "6px";
+            div.style.borderBottom = "1px solid rgba(255,255,255,0.05)";
+            div.style.cursor = "pointer";
 
-                        div.style.padding = "6px";
-                        div.style.borderBottom =
-                            "1px solid rgba(255,255,255,0.05)";
-                        div.style.cursor = "pointer";
+            div.innerHTML = `<span>${c.text}</span>`;
 
-                        div.innerHTML = `<span>${c.text}</span>`;
+            let pressTimer;
 
-                        // 🔥 LONG PRESS EVENT
-                        let pressTimer;
+            function startPress(e) {
+                e.preventDefault();   // 🔥 STOP default behavior
+                e.stopPropagation();  // 🔥 STOP bubbling
 
-                        div.addEventListener("touchstart", () => {
-                            pressTimer = setTimeout(() => {
-                                handleDelete(c, id, key, myId);
-                            }, 600); // 0.6 detik tahan
-                        });
-
-                        div.addEventListener("touchend", () => {
-                            clearTimeout(pressTimer);
-                        });
-
-                        div.addEventListener("mousedown", () => {
-                            pressTimer = setTimeout(() => {
-                                handleDelete(c, id, key, myId);
-                            }, 600);
-                        });
-
-                        div.addEventListener("mouseup", () => {
-                            clearTimeout(pressTimer);
-                        });
-
-                        list.appendChild(div);
-                    });
-                });
+                pressTimer = setTimeout(() => {
+                    handleDelete(c, id, key, myId);
+                }, 600);
             }
+
+            function cancelPress(e) {
+                clearTimeout(pressTimer);
+            }
+
+            div.addEventListener("touchstart", startPress, { passive: false });
+            div.addEventListener("touchend", cancelPress);
+            div.addEventListener("touchmove", cancelPress);
+
+            div.addEventListener("mousedown", startPress);
+            div.addEventListener("mouseup", cancelPress);
+            div.addEventListener("mouseleave", cancelPress);
+
+            list.appendChild(div);
+        });
+    });
+}
 
             function handleDelete(comment, cardId, commentId, myId) {
-                if (comment.userId !== myId) return; // cuma pemilik
+    if (comment.userId !== myId) return;
 
-                let confirmDelete = confirm("Hapus komentar ini?");
-                if (!confirmDelete) return;
+    deleteTarget = { cardId, commentId };
 
-                db.ref(`comments/${cardId}/${commentId}`).remove();
-            }
+    document.getElementById("deleteMenu").classList.remove("hidden");
+}
+function confirmDelete() {
+    if (!deleteTarget) return;
+
+    db.ref(`comments/${deleteTarget.cardId}/${deleteTarget.commentId}`).remove();
+
+    closeDeleteMenu();
+}
+
+function closeDeleteMenu() {
+    deleteTarget = null;
+    document.getElementById("deleteMenu").style.display = "none";
+}
+
+function handleDelete(comment, cardId, commentId, myId) {
+    if (comment.userId !== myId) return;
+
+    deleteTarget = { cardId, commentId };
+
+    let modal = document.getElementById("deleteMenu");
+    modal.style.display = "flex";
+}
 
             window.sendModalComment = function () {
                 let input = document.getElementById("commentInput");
@@ -1134,5 +1196,11 @@
                 });
             };
         </script>
+<div id="deleteMenu" class="delete-menu" style="display:none;">
+    <div class="delete-box">
+        <button onclick="confirmDelete()" class="delete-btn">Hapus</button>
+        <button onclick="closeDeleteMenu()" class="cancel-btn">Batal</button>
+    </div>
+</div>
     </body>
 </html>
