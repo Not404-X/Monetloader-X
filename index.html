@@ -1373,42 +1373,43 @@
             }
 
             window.sendModalComment = function () {
-                let input = document.getElementById("commentInput");
-                let nameInput = document.getElementById("usernameInput");
+    let input = document.getElementById("commentInput");
+    let nameInput = document.getElementById("usernameInput");
 
-                let text = input.value.trim();
-                let userName = nameInput.value.trim();
+    let text = input.value.trim();
+    let userName = nameInput.value.trim();
 
-                userName = userName.replace(/^@+/, "");
+    // hapus @ dobel
+    userName = userName.replace(/^@+/, "");
 
-                if (!text || !currentCardId) return;
+    // 🔥 WAJIB ISI NAMA
+    if (!userName) {
+        nameInput.style.border = "1px solid red";
+        nameInput.placeholder = "Nama wajib diisi!";
+        nameInput.focus();
+        return;
+    }
 
-                if (!userName) userName = "Guest";
+    // 🔥 WAJIB ISI KOMENTAR
+    if (!text || !currentCardId) return;
 
-                let userId = localStorage.getItem("uid");
-                if (!userId) {
-                    userId = "u_" + Math.random().toString(36).substr(2, 9);
-                    localStorage.setItem("uid", userId);
-                }
-                localStorage.setItem("username", userName);
+    let userId = localStorage.getItem("uid");
+    if (!userId) {
+        userId = "u_" + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem("uid", userId);
+    }
 
-                db.ref(`comments/${currentCardId}`).push({
-                    text: filterBadWords(text),
-                    userId: userId,
-                    name: filterBadWords(userName),
-                    time: Date.now()
-                });
+    localStorage.setItem("username", userName);
 
-                input.value = "";
-            };
+    db.ref(`comments/${currentCardId}`).push({
+        text: filterBadWords(text),
+        userId: userId,
+        name: filterBadWords(userName),
+        time: Date.now()
+    });
 
-            // load nama lama
-            document.addEventListener("DOMContentLoaded", () => {
-                let savedName = localStorage.getItem("username");
-                if (savedName) {
-                    document.getElementById("usernameInput").value = savedName;
-                }
-            });
+    input.value = "";
+};
 
             // =====================
             // REALTIME UPDATE FIX
