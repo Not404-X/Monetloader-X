@@ -1361,7 +1361,7 @@ Balas
 ${
     myId === "u_cmvewop"
         ? `
-<button onclick="pinComment('${c.id}', ${c.pinned})"
+<button onclick="pinComment('${c.id}', ${c.pinned || false})"
 style="background:none;border:none;color:#facc15;font-size:11px;">
 📌 Pin
 </button>
@@ -1715,6 +1715,16 @@ border-left:2px solid rgba(255,255,255,.1);
                     });
                 });
             };
+        </script>
+        
+        <script>
+          window.pinComment = function(commentId, isPinned){
+    if(!currentCardId) return;
+
+    db.ref(`comments/${currentCardId}/${commentId}`).update({
+        pinned: !isPinned
+    });
+};
         </script>
         <div id="deleteMenu" class="delete-menu" style="display: none">
             <div class="delete-box">
