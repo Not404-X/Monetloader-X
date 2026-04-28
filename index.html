@@ -590,40 +590,40 @@
             /* =========================
    INPUT
 ========================= */
-            .comment-input-box{
-position:sticky;
-bottom:0;
-display:flex;
-align-items:center;
-gap:10px;
-padding:10px 12px;
-z-index:50;
-}
+            .comment-input-box {
+                position: sticky;
+                bottom: 0;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 10px 12px;
+                z-index: 50;
+            }
 
-.comment-input-box input{
-flex:1;
-height:36px;
-padding:0 12px;
-border:none;
-outline:none;
-border-radius:18px;
-background:#272727;
-color:#fff;
-font-size:13px;
-}
+            .comment-input-box input {
+                flex: 1;
+                height: 36px;
+                padding: 0 12px;
+                border: none;
+                outline: none;
+                border-radius: 18px;
+                background: #272727;
+                color: #fff;
+                font-size: 13px;
+            }
 
-.comment-input-box button{
-height:36px;
-padding:0 12px;
-border:none;
-border-radius:18px;
-background:#272727;
-color:#facc15;
-font-size:12px;
-font-weight:600;
-white-space:nowrap;
-cursor:pointer;
-}
+            .comment-input-box button {
+                height: 36px;
+                padding: 0 12px;
+                border: none;
+                border-radius: 18px;
+                background: #272727;
+                color: #facc15;
+                font-size: 12px;
+                font-weight: 600;
+                white-space: nowrap;
+                cursor: pointer;
+            }
 
             .comment-input-box button:hover {
                 transform: scale(1.05);
@@ -1286,50 +1286,46 @@ cursor:pointer;
                 document.getElementById("commentModal").classList.add("hidden");
             };
 
-            
+            // =======================
+            // LOAD COMMENTS
+            // =======================
+            function loadComments(cardId) {
+                const list = document.getElementById("commentList");
+                const myId = localStorage.getItem("uid");
 
-// =======================
-// LOAD COMMENTS
-// =======================
-function loadComments(cardId){
-    const list = document.getElementById("commentList");
-    const myId = localStorage.getItem("uid");
+                db.ref(`comments/${cardId}`).off();
 
-    db.ref(`comments/${cardId}`).off();
+                db.ref(`comments/${cardId}`).on("value", snap => {
+                    const data = snap.val() || {};
+                    list.innerHTML = "";
 
-    db.ref(`comments/${cardId}`).on("value",(snap)=>{
-        const data = snap.val() || {};
-        list.innerHTML="";
+                    const comments = [];
+                    const replies = {};
 
-        const comments = [];
-        const replies = {};
+                    // pisah parent & reply (lebih hemat)
+                    Object.entries(data).forEach(([id, c]) => {
+                        if (c.parentId) {
+                            if (!replies[c.parentId]) replies[c.parentId] = [];
+                            replies[c.parentId].push({ id, ...c });
+                        } else {
+                            comments.push({ id, ...c });
+                        }
+                    });
 
-        // pisah parent & reply (lebih hemat)
-        Object.entries(data).forEach(([id,c])=>{
-            if(c.parentId){
-                if(!replies[c.parentId]) replies[c.parentId]=[];
-                replies[c.parentId].push({id,...c});
-            }else{
-                comments.push({id,...c});
-            }
-        });
-        
-comments.sort((a, b) => {
-    if (a.pinned && !b.pinned) return -1;
-    if (!a.pinned && b.pinned) return 1;
-    return b.time - a.time;
-});
-        
+                    comments.sort((a, b) => {
+                        if (a.pinned && !b.pinned) return -1;
+                        if (!a.pinned && b.pinned) return 1;
+                        return b.time - a.time;
+                    });
 
-        comments.forEach(c=>{    
-          
-        if (currentView && c.id !== currentView) {
-    return;
-}
+                    comments.forEach(c => {
+                        if (currentView && c.id !== currentView) {
+                            return;
+                        }
 
-            const div=document.createElement("div");
+                        const div = document.createElement("div");
 
-            div.style.cssText=`
+                        div.style.cssText = `
                 padding:10px;
                 border-radius:10px;
                 background:rgba(255,255,255,.06);
@@ -1341,7 +1337,7 @@ comments.sort((a, b) => {
                 gap:4px;
             `;
 
-div.innerHTML=`
+                        div.innerHTML = `
 <span style="color:#aaa;font-size:12px;font-weight:500;">
 @${c.name}
 ${c.pinned ? `<span style="color:#facc15;font-size:11px;margin-left:6px;">📌 Pinned</span>` : ``}
@@ -1362,40 +1358,43 @@ padding:0;
 Balas
 </button>
 
-${myId === "ADMIN_ID_KAMU" ? `
+${
+    myId === "u_cmvewop"
+        ? `
 <button onclick="pinComment('${c.id}', ${c.pinned})"
 style="background:none;border:none;color:#facc15;font-size:11px;">
 📌 Pin
 </button>
-` : ``}
+`
+        : ``
+}
 `;
 
-// tombol balas fix
-const replyBtn = div.querySelector(".reply-btn");
+                        // tombol balas fix
+                        const replyBtn = div.querySelector(".reply-btn");
 
-replyBtn.onclick=(e)=>{
-e.stopPropagation();
-setReply(c.id,c.name);
-};
+                        replyBtn.onclick = e => {
+                            e.stopPropagation();
+                            setReply(c.id, c.name);
+                        };
 
-replyBtn.ontouchstart=(e)=>{
-e.stopPropagation();
-};
+                        replyBtn.ontouchstart = e => {
+                            e.stopPropagation();
+                        };
 
+                        // render replies
+                        const commentList =
+                            document.getElementById("commentList");
 
-// render replies
-const commentList = document.getElementById("commentList");
+                        const childReplies = replies[c.id] || [];
 
-const childReplies = replies[c.id] || [];
+                        if (childReplies.length) {
+                            let opened = false;
 
-if (childReplies.length) {
+                            const toggle = document.createElement("span");
+                            toggle.innerHTML = `Lihat balasan (${childReplies.length})`;
 
-let opened = false;
-
-const toggle = document.createElement("span");
-toggle.innerHTML = `Lihat balasan (${childReplies.length})`;
-
-toggle.style.cssText = `
+                            toggle.style.cssText = `
 display:block;
 margin-top:6px;
 color:#00d9ff;
@@ -1403,19 +1402,18 @@ font-size:11px;
 cursor:pointer;
 `;
 
-const replyWrap = document.createElement("div");
-replyWrap.style.cssText = `
+                            const replyWrap = document.createElement("div");
+                            replyWrap.style.cssText = `
 display:none;
 margin-top:10px;
 padding-left:10px;
 border-left:2px solid rgba(255,255,255,.1);
 `;
 
-childReplies.forEach(r => {
+                            childReplies.forEach(r => {
+                                const rep = document.createElement("div");
 
-    const rep = document.createElement("div");
-
-    rep.style.cssText = `
+                                rep.style.cssText = `
         margin-top:10px;
         padding:8px;
         border-radius:8px;
@@ -1425,7 +1423,7 @@ childReplies.forEach(r => {
         gap:4px;
     `;
 
-    rep.innerHTML = `
+                                rep.innerHTML = `
         <span style="color:#aaa;font-size:12px;font-weight:500;">
             @${r.name}
         </span>
@@ -1449,284 +1447,274 @@ childReplies.forEach(r => {
         </button>
     `;
 
-    // =========================
-    // BALAS (NORMAL CLICK)
-    // =========================
-    rep.querySelector(".reply-child-btn").addEventListener("click", (e) => {
-        e.stopPropagation();
-        setReply(c.id, r.name);
-    });
+                                // =========================
+                                // BALAS (NORMAL CLICK)
+                                // =========================
+                                rep.querySelector(
+                                    ".reply-child-btn"
+                                ).addEventListener("click", e => {
+                                    e.stopPropagation();
+                                    setReply(c.id, r.name);
+                                });
 
-    // =========================
-    // LONG PRESS DELETE
-    // =========================
-    let pressTimerReply;
-    let isLongPress = false;
+                                // =========================
+                                // LONG PRESS DELETE
+                                // =========================
+                                let pressTimerReply;
+                                let isLongPress = false;
 
-    const startPressReply = (e) => {
+                                const startPressReply = e => {
+                                    if (
+                                        e.target.classList.contains(
+                                            "reply-child-btn"
+                                        )
+                                    )
+                                        return;
 
-        if (e.target.classList.contains("reply-child-btn")) return;
+                                    isLongPress = false;
 
-        isLongPress = false;
+                                    const myId = localStorage.getItem("uid");
 
-        const myId = localStorage.getItem("uid");
+                                    pressTimerReply = setTimeout(() => {
+                                        isLongPress = true;
 
-        pressTimerReply = setTimeout(() => {
-            isLongPress = true;
+                                        handleDelete(r, cardId, r.id, myId);
+                                    }, 600);
+                                };
 
-            handleDelete(r, cardId, r.id, myId);
+                                const cancelPressReply = () => {
+                                    clearTimeout(pressTimerReply);
+                                };
 
-        }, 600);
-    };
+                                ["touchstart", "mousedown"].forEach(ev => {
+                                    rep.addEventListener(ev, startPressReply);
+                                });
 
-    const cancelPressReply = () => {
-        clearTimeout(pressTimerReply);
-    };
+                                [
+                                    "touchend",
+                                    "touchmove",
+                                    "mouseup",
+                                    "mouseleave"
+                                ].forEach(ev => {
+                                    rep.addEventListener(ev, cancelPressReply);
+                                });
 
-    ["touchstart", "mousedown"].forEach(ev => {
-        rep.addEventListener(ev, startPressReply);
-    });
+                                replyWrap.appendChild(rep);
+                            });
 
-    ["touchend", "touchmove", "mouseup", "mouseleave"].forEach(ev => {
-        rep.addEventListener(ev, cancelPressReply);
-    });
+                            toggle.onclick = function (e) {
+                                e.stopPropagation();
 
-    replyWrap.appendChild(rep);
-});
+                                if (currentView === c.id) {
+                                    currentView = null; // balik ke semua
+                                } else {
+                                    currentView = c.id; // masuk reply mode
+                                }
 
-toggle.onclick = function (e) {
-    e.stopPropagation();
-    
+                                loadComments(currentCardId); // 🔥 render ulang sesuai state
+                            };
 
-    if(currentView === c.id){
-        currentView = null; // balik ke semua
-    }else{
-        currentView = c.id; // masuk reply mode
-    }
+                            if (currentView === c.id) {
+                                replyWrap.style.display = "block";
+                                toggle.innerHTML = "← Kembali";
+                            } else {
+                                replyWrap.style.display = "none";
+                                toggle.innerHTML = `Lihat balasan (${childReplies.length})`;
+                            }
 
-    loadComments(currentCardId); // 🔥 render ulang sesuai state
-};
+                            div.appendChild(toggle);
+                            div.appendChild(replyWrap);
+                        }
 
-if(currentView === c.id){
-    replyWrap.style.display = "block";
-    toggle.innerHTML = "← Kembali";
-}else{
-    replyWrap.style.display = "none";
-    toggle.innerHTML = `Lihat balasan (${childReplies.length})`;
-}
+                        // ==================
+                        // LONG PRESS DELETE
+                        // ==================
+                        let pressTimer;
 
-div.appendChild(toggle);
-div.appendChild(replyWrap);
+                        const startPress = e => {
+                            if (
+                                e.target.classList.contains("reply-btn") ||
+                                e.target.innerText.includes("balasan")
+                            ) {
+                                return;
+                            }
 
-}
+                            pressTimer = setTimeout(() => {
+                                handleDelete(c, cardId, c.id, myId);
+                            }, 600);
+                        };
 
+                        const cancelPress = () => {
+                            clearTimeout(pressTimer);
+                        };
 
-            // ==================
-            // LONG PRESS DELETE
-            // ==================
-            let pressTimer;
+                        ["touchstart", "mousedown"].forEach(ev => {
+                            div.addEventListener("touchstart", startPress);
+                        });
 
-            const startPress=(e)=>{
+                        [
+                            "touchend",
+                            "touchmove",
+                            "mouseup",
+                            "mouseleave"
+                        ].forEach(ev => {
+                            div.addEventListener(ev, cancelPress);
+                        });
 
-if(
-e.target.classList.contains("reply-btn") ||
-e.target.innerText.includes("balasan")
-){
-return;
-}
+                        list.appendChild(div);
+                    });
+                });
+            }
 
-pressTimer=setTimeout(()=>{
-handleDelete(c,cardId,c.id,myId);
-},600);
+            // =======================
+            // DELETE
+            // =======================
+            function handleDelete(comment, cardId, commentId, myId) {
+                if (comment.userId !== myId) return;
 
-};
+                deleteTarget = { cardId, commentId };
 
-            const cancelPress=()=>{
-                clearTimeout(pressTimer);
+                document.getElementById("deleteMenu").style.display = "flex";
+            }
+
+            function confirmDelete() {
+                if (!deleteTarget) return;
+
+                const { cardId, commentId } = deleteTarget;
+
+                // 🔥 ambil semua komentar
+                db.ref(`comments/${cardId}`)
+                    .once("value")
+                    .then(snap => {
+                        const data = snap.val() || {};
+
+                        // 1. hapus parent
+                        db.ref(`comments/${cardId}/${commentId}`).remove();
+
+                        // 2. hapus semua reply yang punya parentId ini
+                        Object.entries(data).forEach(([id, c]) => {
+                            if (c.parentId === commentId) {
+                                db.ref(`comments/${cardId}/${id}`).remove();
+                            }
+                        });
+
+                        closeDeleteMenu();
+                    });
+            }
+
+            function closeDeleteMenu() {
+                deleteTarget = null;
+                document.getElementById("deleteMenu").style.display = "none";
+            }
+
+            // =======================
+            // SEND COMMENT
+            // =======================
+            window.sendModalComment = function () {
+                const input = document.getElementById("commentInput");
+                const nameInput = document.getElementById("usernameInput");
+
+                const text = input.value.trim();
+                const userName = nameInput.value.trim();
+
+                if (!userName) {
+                    nameInput.style.border = "1px solid red";
+                    nameInput.placeholder = "Nama wajib diisi!";
+                    nameInput.focus();
+                    return;
+                }
+
+                if (!text || !currentCardId) return;
+
+                let userId = localStorage.getItem("uid");
+
+                if (!userId) {
+                    userId = "u_" + Math.random().toString(36).slice(2, 9);
+                    localStorage.setItem("uid", userId);
+                }
+
+                localStorage.setItem("username", userName);
+
+                db.ref(`comments/${currentCardId}`).push({
+                    text: filterBadWords(text),
+                    userId,
+                    name: filterBadWords(userName),
+                    parentId: replyTo || null,
+                    time: Date.now(),
+                    pinned: false // 🔥 TAMBAHAN PIN
+                });
+
+                // 🔥 RESET UI (INI FIX UTAMA)
+                resetCommentView();
+
+                input.value = "";
+                replyTo = null;
+                input.placeholder = "Tulis komentar...";
+
+                setTimeout(() => {
+                    const list = document.getElementById("commentList");
+                    list.scrollTop = list.scrollHeight;
+                }, 100);
             };
 
-            [
-                "touchstart",
-                "mousedown"
-            ].forEach(ev=>{
-                div.addEventListener("touchstart", startPress);
-            });
+            // =======================
+            // REPLY
+            // =======================
+            window.setReply = function (id, name) {
+                replyTo = id;
 
-            [
-                "touchend",
-                "touchmove",
-                "mouseup",
-                "mouseleave"
-            ].forEach(ev=>{
-                div.addEventListener(ev,cancelPress);
-            });
+                const input = document.getElementById("commentInput");
+                input.placeholder = `Balas ke @${name}`;
+                input.focus();
+            };
 
-            list.appendChild(div);
-        });
+            function resetCommentView() {
+                const commentList = document.getElementById("commentList");
 
-    });
-}
-
-
-// =======================
-// DELETE
-// =======================
-function handleDelete(comment,cardId,commentId,myId){
-    if(comment.userId!==myId) return;
-
-    deleteTarget={cardId,commentId};
-
-    document.getElementById("deleteMenu").style.display="flex";
-}
-
-function confirmDelete(){
-    if(!deleteTarget) return;
-
-    const { cardId, commentId } = deleteTarget;
-
-    // 🔥 ambil semua komentar
-    db.ref(`comments/${cardId}`).once("value").then(snap => {
-        const data = snap.val() || {};
-
-        // 1. hapus parent
-        db.ref(`comments/${cardId}/${commentId}`).remove();
-
-        // 2. hapus semua reply yang punya parentId ini
-        Object.entries(data).forEach(([id, c]) => {
-            if (c.parentId === commentId) {
-                db.ref(`comments/${cardId}/${id}`).remove();
+                Array.from(commentList.children).forEach(el => {
+                    el.style.display = "";
+                });
             }
-        });
 
-        closeDeleteMenu();
-    });
-}
+            // =======================
+            // REALTIME REACTION
+            // =======================
+            window.initRealtime = function () {
+                document.querySelectorAll(".emoji-bar").forEach(bar => {
+                    const id = bar.dataset.id;
+                    const list = bar.querySelector(".emoji-list");
 
-function closeDeleteMenu(){
-    deleteTarget=null;
-    document.getElementById("deleteMenu").style.display="none";
-}
+                    db.ref(`reactions/${id}`).on("value", snap => {
+                        const data = snap.val() || {};
+                        list.innerHTML = "";
 
+                        Object.keys(data).forEach(type => {
+                            const count = Object.keys(data[type] || {}).length;
+                            if (!count) return;
 
-// =======================
-// SEND COMMENT
-// =======================
-window.sendModalComment=function(){
+                            const emoji = emojiSet.find(e => e.key === type);
+                            if (!emoji) return;
 
-    const input=document.getElementById("commentInput");
-    const nameInput=document.getElementById("usernameInput");
+                            const span = document.createElement("span");
 
-    const text=input.value.trim();
-    const userName=nameInput.value.trim();
+                            span.dataset.type = type;
 
-    if(!userName){
-        nameInput.style.border="1px solid red";
-        nameInput.placeholder="Nama wajib diisi!";
-        nameInput.focus();
-        return;
-    }
-
-    if(!text || !currentCardId) return;
-
-    let userId=localStorage.getItem("uid");
-
-    if(!userId){
-        userId="u_"+Math.random().toString(36).slice(2,9);
-        localStorage.setItem("uid",userId);
-    }
-
-    localStorage.setItem("username",userName);
-
-    db.ref(`comments/${currentCardId}`).push({
-    text: filterBadWords(text),
-    userId,
-    name: filterBadWords(userName),
-    parentId: replyTo || null,
-    time: Date.now(),
-    pinned: false // 🔥 TAMBAHAN PIN
-});
-
-    // 🔥 RESET UI (INI FIX UTAMA)
-    resetCommentView();
-
-    input.value="";
-    replyTo=null;
-    input.placeholder="Tulis komentar...";
-    
-    setTimeout(()=>{
-    const list = document.getElementById("commentList");
-    list.scrollTop = list.scrollHeight;
-},100);
-};
-
-
-// =======================
-// REPLY
-// =======================
-window.setReply=function(id,name){
-    replyTo=id;
-
-    const input=document.getElementById("commentInput");
-    input.placeholder=`Balas ke @${name}`;
-    input.focus();
-};
-
-function resetCommentView(){
-    const commentList = document.getElementById("commentList");
-
-    Array.from(commentList.children).forEach(el => {
-        el.style.display = "";
-    });
-}
-
-
-// =======================
-// REALTIME REACTION
-// =======================
-window.initRealtime=function(){
-
- document.querySelectorAll(".emoji-bar").forEach(bar=>{
-
-   const id=bar.dataset.id;
-   const list=bar.querySelector(".emoji-list");
-
-   db.ref(`reactions/${id}`).on("value",(snap)=>{
-
-      const data=snap.val() || {};
-      list.innerHTML="";
-
-      Object.keys(data).forEach(type=>{
-
-         const count=Object.keys(data[type]||{}).length;
-         if(!count) return;
-
-         const emoji=emojiSet.find(e=>e.key===type);
-         if(!emoji) return;
-
-         const span=document.createElement("span");
-
-         span.dataset.type=type;
-
-         span.innerHTML=`
+                            span.innerHTML = `
             ${
-             emoji.url
-             ? `<img src="${emoji.url}" style="width:16px;height:16px">`
-             : emoji.icon
+                emoji.url
+                    ? `<img src="${emoji.url}" style="width:16px;height:16px">`
+                    : emoji.icon
             }
             <b>${count}</b>
          `;
 
-         span.onclick=()=>react(span,type);
+                            span.onclick = () => react(span, type);
 
-         list.appendChild(span);
-
-      });
-
-   });
-
- });
-
-};
+                            list.appendChild(span);
+                        });
+                    });
+                });
+            };
         </script>
         <div id="deleteMenu" class="delete-menu" style="display: none">
             <div class="delete-box">
