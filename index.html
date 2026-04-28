@@ -907,10 +907,6 @@
     }
 </div>
     <div class="desc">${app.desc}</div>
-    
-    ${app.expire ? `
-<div class="desc" id="timer_${app.name.replace(/\s+/g,'_')}" style="color:#facc15;font-size:12px;"></div>
-` : ``}
 
     <div class="btn-row">
     
@@ -1722,7 +1718,6 @@ border-left:2px solid rgba(255,255,255,.1);
         </script>
         
         <script>
-          // UNTUK PIN KOMEN
           window.pinComment = function(commentId, isPinned){
     if(!currentCardId) return;
 
@@ -1730,34 +1725,6 @@ border-left:2px solid rgba(255,255,255,.1);
         pinned: !isPinned
     });
 };
-
-      //UNTUK expireD
-      function startCountdown(id, expireTime){
-
-    function update(){
-        const el = document.getElementById(id);
-        if(!el) return;
-
-        const diff = expireTime - Date.now();
-
-        if(diff <= 0){
-            el.innerHTML = "❌ EXPIRED";
-            el.style.color = "red";
-            return;
-        }
-
-        const days = Math.floor(diff / (1000*60*60*24));
-        const hours = Math.floor((diff / (1000*60*60)) % 24);
-        const minutes = Math.floor((diff / (1000*60)) % 60);
-
-        el.innerHTML = `⏳ Expired in: ${days}d ${hours}h ${minutes}m`;
-
-        setTimeout(update, 60000);
-    }
-
-    update();
-}
-
         </script>
         <div id="deleteMenu" class="delete-menu" style="display: none">
             <div class="delete-box">
