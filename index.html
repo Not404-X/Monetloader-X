@@ -827,7 +827,11 @@
         <div id="commentModal" class="comment-modal hidden">
             <div class="comment-panel">
                 <div class="comment-header">
-                    <span>Komentar</span>
+    <span id="commentTitle">Komentar</span>
+
+    <button id="backReplyBtn" onclick="exitReplyView()" style="display:none;">
+        ← 
+    </button>
 
                     <div style="display: flex; align-items: center; gap: 6px">
                         <input id="usernameInput" placeholder="Nama..." />
@@ -1313,6 +1317,15 @@
 
                     const comments = [];
                     const replies = {};
+                    
+                    const backBtn = document.getElementById("backReplyBtn");
+
+// tampilkan tombol kalau lagi di mode reply
+if (currentView) {
+    backBtn.style.display = "inline-block";
+} else {
+    backBtn.style.display = "none";
+}
 
                     // pisah parent & reply (lebih hemat)
                     Object.entries(data).forEach(([id, c]) => {
@@ -1528,7 +1541,12 @@ border-left:2px solid rgba(255,255,255,.1);
 
                             if (currentView === c.id) {
                                 replyWrap.style.display = "block";
-                                toggle.innerHTML = "← Kembali";
+                                if (currentView === c.id) {
+    toggle.style.display = "none"; // 🔥 sembunyikan
+} else {
+    toggle.style.display = "block";
+    toggle.innerHTML = `Lihat balasan (${childReplies.length})`;
+}
                             } else {
                                 replyWrap.style.display = "none";
                                 toggle.innerHTML = `Lihat balasan (${childReplies.length})`;
@@ -1741,6 +1759,15 @@ border-left:2px solid rgba(255,255,255,.1);
                     pinned: !isPinned
                 });
             };
+            
+            window.exitReplyView = function () {
+    currentView = null;
+    replyTo = null;
+
+    document.getElementById("backReplyBtn").style.display = "none";
+
+    loadComments(currentCardId);
+};
         </script>
         <div id="deleteMenu" class="delete-menu" style="display: none">
             <div class="delete-box">
