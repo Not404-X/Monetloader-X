@@ -1314,6 +1314,8 @@ function loadComments(cardId){
             }
         });
         
+comments.sort((a, b) => b.time - a.time);
+        
 
         comments.forEach(c=>{    
           
