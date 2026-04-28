@@ -1493,6 +1493,7 @@ border-left:2px solid rgba(255,255,255,.1);
                                 let isLongPress = false;
 
                                 const startPressReply = e => {
+                                  e.stopPropagation();
                                     if (
                                         e.target.classList.contains(
                                             "reply-child-btn"
@@ -1507,7 +1508,17 @@ border-left:2px solid rgba(255,255,255,.1);
                                     pressTimerReply = setTimeout(() => {
                                         isLongPress = true;
 
-                                        handleDelete(r, cardId, r.id, myId);
+                                        handleDelete(
+    {
+        id: r.id,
+        parentId: r.parentId,
+        userId: r.userId,
+        text: r.text
+    },
+    cardId,
+    r.id,
+    myId
+);
                                     }, 600);
                                 };
 
@@ -1516,8 +1527,11 @@ border-left:2px solid rgba(255,255,255,.1);
                                 };
 
                                 ["touchstart", "mousedown"].forEach(ev => {
-                                    rep.addEventListener(ev, startPressReply);
-                                });
+    rep.addEventListener(ev, e => {
+        e.stopPropagation(); // 🔥 cegah naik ke parent
+        startPressReply(e);
+    });
+});
 
                                 [
                                     "touchend",
