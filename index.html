@@ -1528,29 +1528,22 @@ border-left:2px solid rgba(255,255,255,.1);
                             });
 
                             toggle.onclick = function (e) {
-                                e.stopPropagation();
+    e.stopPropagation();
 
-                                if (currentView === c.id) {
-                                    currentView = null; // balik ke semua
-                                } else {
-                                    currentView = c.id; // masuk reply mode
-                                }
-
-                                loadComments(currentCardId); // 🔥 render ulang sesuai state
-                            };
+    currentView = c.id;
+    loadComments(currentCardId);
+};
 
                             if (currentView === c.id) {
-                                replyWrap.style.display = "block";
-                                if (currentView === c.id) {
-    toggle.style.display = "none"; // 🔥 sembunyikan
+    // 🔥 mode lihat balasan
+    replyWrap.style.display = "block";
+    toggle.style.display = "none"; // sembunyikan tombol
 } else {
+    // 🔥 mode normal
+    replyWrap.style.display = "none";
     toggle.style.display = "block";
     toggle.innerHTML = `Lihat balasan (${childReplies.length})`;
 }
-                            } else {
-                                replyWrap.style.display = "none";
-                                toggle.innerHTML = `Lihat balasan (${childReplies.length})`;
-                            }
 
                             div.appendChild(toggle);
                             div.appendChild(replyWrap);
