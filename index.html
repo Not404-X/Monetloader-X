@@ -1314,7 +1314,11 @@ function loadComments(cardId){
             }
         });
         
-comments.sort((a, b) => b.time - a.time);
+comments.sort((a, b) => {
+    if (a.pinned && !b.pinned) return -1;
+    if (!a.pinned && b.pinned) return 1;
+    return b.time - a.time;
+});
         
 
         comments.forEach(c=>{    
@@ -1337,9 +1341,10 @@ comments.sort((a, b) => b.time - a.time);
                 gap:4px;
             `;
 
-            div.innerHTML=`
+div.innerHTML=`
 <span style="color:#aaa;font-size:12px;font-weight:500;">
 @${c.name}
+${c.pinned ? `<span style="color:#facc15;font-size:11px;margin-left:6px;">📌 Pinned</span>` : ``}
 </span>
 
 <span>${c.text}</span>
@@ -1356,6 +1361,13 @@ padding:0;
 ">
 Balas
 </button>
+
+${myId === "ADMIN_ID_KAMU" ? `
+<button onclick="pinComment('${c.id}', ${c.pinned})"
+style="background:none;border:none;color:#facc15;font-size:11px;">
+📌 Pin
+</button>
+` : ``}
 `;
 
 // tombol balas fix
@@ -1626,12 +1638,13 @@ window.sendModalComment=function(){
     localStorage.setItem("username",userName);
 
     db.ref(`comments/${currentCardId}`).push({
-        text:filterBadWords(text),
-        userId,
-        name:filterBadWords(userName),
-        parentId:replyTo || null,
-        time:Date.now()
-    });
+    text: filterBadWords(text),
+    userId,
+    name: filterBadWords(userName),
+    parentId: replyTo || null,
+    time: Date.now(),
+    pinned: false // 🔥 TAMBAHAN PIN
+});
 
     // 🔥 RESET UI (INI FIX UTAMA)
     resetCommentView();
