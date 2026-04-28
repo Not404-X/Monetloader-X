@@ -1292,18 +1292,18 @@
             function loadComments(cardId) {
                 const list = document.getElementById("commentList");
                 const myId = localStorage.getItem("uid");
-                
+
                 const inputBox = document.querySelector(".comment-input-box");
 
-// 🔥 kondisi:
-// - kalau lagi lihat balasan DAN belum klik tombol balas → hide
-// - kalau lagi reply → tetap tampil
+                // 🔥 kondisi:
+                // - kalau lagi lihat balasan DAN belum klik tombol balas → hide
+                // - kalau lagi reply → tetap tampil
 
-if(currentView && !replyTo){
-    inputBox.style.display = "none";
-}else{
-    inputBox.style.display = "flex";
-}
+                if (currentView && !replyTo) {
+                    inputBox.style.display = "none";
+                } else {
+                    inputBox.style.display = "flex";
+                }
 
                 db.ref(`comments/${cardId}`).off();
 
@@ -1662,7 +1662,7 @@ border-left:2px solid rgba(255,255,255,.1);
                 input.value = "";
                 replyTo = null;
                 input.placeholder = "Tulis komentar...";
-loadComments(currentCardId); // 🔥 refresh ulang UI
+                loadComments(currentCardId); // 🔥 refresh ulang UI
                 setTimeout(() => {
                     const list = document.getElementById("commentList");
                     list.scrollTop = list.scrollHeight;
@@ -1672,17 +1672,17 @@ loadComments(currentCardId); // 🔥 refresh ulang UI
             // =======================
             // REPLY
             // =======================
-            window.setReply=function(id,name){
-    replyTo=id;
+            window.setReply = function (id, name) {
+                replyTo = id;
 
-    const input=document.getElementById("commentInput");
-    const inputBox = document.querySelector(".comment-input-box");
+                const input = document.getElementById("commentInput");
+                const inputBox = document.querySelector(".comment-input-box");
 
-    inputBox.style.display = "flex"; // 🔥 paksa muncul
+                inputBox.style.display = "flex"; // 🔥 paksa muncul
 
-    input.placeholder=`Balas ke @${name}`;
-    input.focus();
-};
+                input.placeholder = `Balas ke @${name}`;
+                input.focus();
+            };
 
             function resetCommentView() {
                 const commentList = document.getElementById("commentList");
