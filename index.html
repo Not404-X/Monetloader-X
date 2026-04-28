@@ -827,11 +827,15 @@
         <div id="commentModal" class="comment-modal hidden">
             <div class="comment-panel">
                 <div class="comment-header">
-    <span id="commentTitle">Komentar</span>
+                    <span id="commentTitle">Komentar</span>
 
-    <button id="backReplyBtn" onclick="exitReplyView()" style="display:none;">
-        ← 
-    </button>
+                    <button
+                        id="backReplyBtn"
+                        onclick="exitReplyView()"
+                        style="display: none"
+                    >
+                        ←
+                    </button>
 
                     <div style="display: flex; align-items: center; gap: 6px">
                         <input id="usernameInput" placeholder="Nama..." />
@@ -1317,15 +1321,15 @@
 
                     const comments = [];
                     const replies = {};
-                    
+
                     const backBtn = document.getElementById("backReplyBtn");
 
-// tampilkan tombol kalau lagi di mode reply
-if (currentView) {
-    backBtn.style.display = "inline-block";
-} else {
-    backBtn.style.display = "none";
-}
+                    // tampilkan tombol kalau lagi di mode reply
+                    if (currentView) {
+                        backBtn.style.display = "inline-block";
+                    } else {
+                        backBtn.style.display = "none";
+                    }
 
                     // pisah parent & reply (lebih hemat)
                     Object.entries(data).forEach(([id, c]) => {
@@ -1528,22 +1532,22 @@ border-left:2px solid rgba(255,255,255,.1);
                             });
 
                             toggle.onclick = function (e) {
-    e.stopPropagation();
+                                e.stopPropagation();
 
-    currentView = c.id;
-    loadComments(currentCardId);
-};
+                                currentView = c.id;
+                                loadComments(currentCardId);
+                            };
 
                             if (currentView === c.id) {
-    // 🔥 mode lihat balasan
-    replyWrap.style.display = "block";
-    toggle.style.display = "none"; // sembunyikan tombol
-} else {
-    // 🔥 mode normal
-    replyWrap.style.display = "none";
-    toggle.style.display = "block";
-    toggle.innerHTML = `Lihat balasan (${childReplies.length})`;
-}
+                                // 🔥 mode lihat balasan
+                                replyWrap.style.display = "block";
+                                toggle.style.display = "none"; // sembunyikan tombol
+                            } else {
+                                // 🔥 mode normal
+                                replyWrap.style.display = "none";
+                                toggle.style.display = "block";
+                                toggle.innerHTML = `Lihat balasan (${childReplies.length})`;
+                            }
 
                             div.appendChild(toggle);
                             div.appendChild(replyWrap);
@@ -1752,15 +1756,15 @@ border-left:2px solid rgba(255,255,255,.1);
                     pinned: !isPinned
                 });
             };
-            
+
             window.exitReplyView = function () {
-    currentView = null;
-    replyTo = null;
+                currentView = null;
+                replyTo = null;
 
-    document.getElementById("backReplyBtn").style.display = "none";
+                document.getElementById("backReplyBtn").style.display = "none";
 
-    loadComments(currentCardId);
-};
+                loadComments(currentCardId);
+            };
         </script>
         <div id="deleteMenu" class="delete-menu" style="display: none">
             <div class="delete-box">
