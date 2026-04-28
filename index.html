@@ -1493,7 +1493,7 @@ border-left:2px solid rgba(255,255,255,.1);
                                 let isLongPress = false;
 
                                 const startPressReply = e => {
-                                  e.stopPropagation();
+                                    e.stopPropagation();
                                     if (
                                         e.target.classList.contains(
                                             "reply-child-btn"
@@ -1509,16 +1509,16 @@ border-left:2px solid rgba(255,255,255,.1);
                                         isLongPress = true;
 
                                         handleDelete(
-    {
-        id: r.id,
-        parentId: r.parentId,
-        userId: r.userId,
-        text: r.text
-    },
-    cardId,
-    r.id,
-    myId
-);
+                                            {
+                                                id: r.id,
+                                                parentId: r.parentId,
+                                                userId: r.userId,
+                                                text: r.text
+                                            },
+                                            cardId,
+                                            r.id,
+                                            myId
+                                        );
                                     }, 600);
                                 };
 
@@ -1527,11 +1527,11 @@ border-left:2px solid rgba(255,255,255,.1);
                                 };
 
                                 ["touchstart", "mousedown"].forEach(ev => {
-    rep.addEventListener(ev, e => {
-        e.stopPropagation(); // 🔥 cegah naik ke parent
-        startPressReply(e);
-    });
-});
+                                    rep.addEventListener(ev, e => {
+                                        e.stopPropagation(); // 🔥 cegah naik ke parent
+                                        startPressReply(e);
+                                    });
+                                });
 
                                 [
                                     "touchend",
