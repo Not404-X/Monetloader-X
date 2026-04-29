@@ -742,6 +742,13 @@
                 justify-content: space-between;
                 align-items: center;
             }
+            
+            .comment-count{
+    font-size:9px;       /* 🔥 kecil banget */
+    color:#aaa;
+    margin-top:2px;
+    pointer-events:none; /* biar klik tetap ke tombol */
+}
         </style>
     </head>
 
@@ -936,10 +943,17 @@
         </div>
          <!-- 🔥 KANAN -->
     <div class="right-btns">
+        
+        <div class="icon-btn comment-btn" 
+     data-id="${app.name.replace(/\s+/g, "_")}"
+     onclick="openComments(this.dataset.id)">  
 
-        <div class="icon-btn comment-btn" onclick="openComments('${app.name.replace(/\s+/g, "_")}')">  
-            💬  
-        </div>  
+    <div class="comment-wrap">
+        <span>💬</span>
+        <span class="comment-count">0</span>
+    </div>
+
+</div>
 
         ${
             app.review
@@ -1721,45 +1735,74 @@ border-left:2px solid rgba(255,255,255,.1);
                 });
             }
 
-            // =======================
-            // REALTIME REACTION
-            // =======================
-            window.initRealtime = function () {
-                document.querySelectorAll(".emoji-bar").forEach(bar => {
-                    const id = bar.dataset.id;
-                    const list = bar.querySelector(".emoji-list");
+// =======================
+// REALTIME REACTION
+// =======================
+window.initRealtime = function(){
 
-                    db.ref(`reactions/${id}`).on("value", snap => {
-                        const data = snap.val() || {};
-                        list.innerHTML = "";
+    // =======================
+    // REALTIME REACTIONS
+    // =======================
+    document.querySelectorAll(".emoji-bar").forEach(bar=>{
 
-                        Object.keys(data).forEach(type => {
-                            const count = Object.keys(data[type] || {}).length;
-                            if (!count) return;
+        const id = bar.dataset.id;
+        const list = bar.querySelector(".emoji-list");
 
-                            const emoji = emojiSet.find(e => e.key === type);
-                            if (!emoji) return;
+        db.ref(`reactions/${id}`).on("value",(snap)=>{
 
-                            const span = document.createElement("span");
+            const data = snap.val() || {};
+            list.innerHTML="";
 
-                            span.dataset.type = type;
+            Object.keys(data).forEach(type=>{
 
-                            span.innerHTML = `
-            ${
-                emoji.url
-                    ? `<img src="${emoji.url}" style="width:16px;height:16px">`
-                    : emoji.icon
-            }
-            <b>${count}</b>
-         `;
+                const count = Object.keys(data[type]||{}).length;
+                if(!count) return;
 
-                            span.onclick = () => react(span, type);
+                const emoji = emojiSet.find(e=>e.key===type);
+                if(!emoji) return;
 
-                            list.appendChild(span);
-                        });
-                    });
-                });
-            };
+                const span = document.createElement("span");
+                span.dataset.type = type;
+
+                span.innerHTML = `
+                    ${
+                        emoji.url
+                        ? `<img src="${emoji.url}" style="width:16px;height:16px">`
+                        : emoji.icon
+                    }
+                    <b>${count}</b>
+                `;
+
+                span.onclick = ()=>react(span,type);
+
+                list.appendChild(span);
+            });
+
+        });
+
+    });
+
+
+    // =======================
+    // 🔥 REALTIME COMMENT COUNT
+    // =======================
+    document.querySelectorAll(".comment-btn").forEach(btn => {
+
+        const id = btn.dataset.id;
+        const countEl = btn.querySelector(".comment-count");
+
+        db.ref(`comments/${id}`).on("value",(snap)=>{
+
+            const data = snap.val() || {};
+            const total = Object.keys(data).length;
+
+            countEl.textContent = total;
+
+        });
+
+    });
+
+};
         </script>
 
         <script>
