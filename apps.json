@@ -1,5 +1,12 @@
 {
     "x64": [
+      {
+        "name": "Cmd Helper (all client",
+        "desc": "Monet cmd helper adalah monet untuk membantu kalian dalam menggunakan cmd tanpa harus ribet ngetik, tinggal pencet tombol aja. Cmd helper ini udah support di semua client",
+        "file": "https://sfl.gl/3jP4",
+        "review": "https://youtu.be/Nl9PFKQsJ7s?si=A7dKDEY6l84yK-SW",
+        "status": "new"
+      },
         {
             "name": "Damage Informer (all client)",
             "desc": "Tampilkan nama target, Tampilkan HP (warna pink), Tampilkan Armor (warna putih), HP & Armor aman (0–100), Teks ber-outline supaya terbaca, Ringan & stabil. *Toggle / Command* /xdmg → ON / OFF UI target",
