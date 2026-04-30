@@ -1084,22 +1084,26 @@
                 // ======================
                 let rect = btn.getBoundingClientRect();
 
-                let pickerWidth = 220;
-                let pickerHeight = 180;
+let pickerWidth = 220;
+let pickerHeight = 180;
 
-                let top = rect.bottom;
-                let left = rect.left;
+// 🔥 posisi awal (ikut scroll)
+let top = rect.bottom + window.scrollY;
+let left = rect.left + window.scrollX;
 
-                if (left + pickerWidth > window.innerWidth) {
-                    left = window.innerWidth - pickerWidth - 10;
-                }
+// 🔥 kalau keluar kanan layar
+if (left + pickerWidth > window.innerWidth) {
+    left = window.innerWidth - pickerWidth - 10 + window.scrollX;
+}
 
-                if (top + pickerHeight > window.innerHeight) {
-                    top = rect.top - pickerHeight;
-                }
+// 🔥 kalau keluar bawah layar → tampil ke atas tombol
+if (rect.bottom + pickerHeight > window.innerHeight) {
+    top = rect.top + window.scrollY - pickerHeight;
+}
 
-                picker.style.top = top + "px";
-                picker.style.left = left + "px";
+picker.style.position = "absolute";
+picker.style.top = top + "px";
+picker.style.left = left + "px";
 
                 // ======================
                 // AUTO CLOSE OUTSIDE CLICK
