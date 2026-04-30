@@ -742,13 +742,13 @@
                 justify-content: space-between;
                 align-items: center;
             }
-            
-            .comment-count{
-    font-size:9px;       /* 🔥 kecil banget */
-    color:#aaa;
-    margin-top:2px;
-    pointer-events:none; /* biar klik tetap ke tombol */
-}
+
+            .comment-count {
+                font-size: 9px; /* 🔥 kecil banget */
+                color: #aaa;
+                margin-top: 2px;
+                pointer-events: none; /* biar klik tetap ke tombol */
+            }
         </style>
     </head>
 
@@ -1084,26 +1084,27 @@
                 // ======================
                 let rect = btn.getBoundingClientRect();
 
-let pickerWidth = 220;
-let pickerHeight = 180;
+                let pickerWidth = 220;
+                let pickerHeight = 180;
 
-// 🔥 posisi awal (ikut scroll)
-let top = rect.bottom + window.scrollY;
-let left = rect.left + window.scrollX;
+                // 🔥 posisi awal (ikut scroll)
+                let top = rect.bottom + window.scrollY;
+                let left = rect.left + window.scrollX;
 
-// 🔥 kalau keluar kanan layar
-if (left + pickerWidth > window.innerWidth) {
-    left = window.innerWidth - pickerWidth - 10 + window.scrollX;
-}
+                // 🔥 kalau keluar kanan layar
+                if (left + pickerWidth > window.innerWidth) {
+                    left =
+                        window.innerWidth - pickerWidth - 10 + window.scrollX;
+                }
 
-// 🔥 kalau keluar bawah layar → tampil ke atas tombol
-if (rect.bottom + pickerHeight > window.innerHeight) {
-    top = rect.top + window.scrollY - pickerHeight;
-}
+                // 🔥 kalau keluar bawah layar → tampil ke atas tombol
+                if (rect.bottom + pickerHeight > window.innerHeight) {
+                    top = rect.top + window.scrollY - pickerHeight;
+                }
 
-picker.style.position = "absolute";
-picker.style.top = top + "px";
-picker.style.left = left + "px";
+                picker.style.position = "absolute";
+                picker.style.top = top + "px";
+                picker.style.left = left + "px";
 
                 // ======================
                 // AUTO CLOSE OUTSIDE CLICK
@@ -1739,74 +1740,62 @@ border-left:2px solid rgba(255,255,255,.1);
                 });
             }
 
-// =======================
-// REALTIME REACTION
-// =======================
-window.initRealtime = function(){
+            // =======================
+            // REALTIME REACTION
+            // =======================
+            window.initRealtime = function () {
+                // =======================
+                // REALTIME REACTIONS
+                // =======================
+                document.querySelectorAll(".emoji-bar").forEach(bar => {
+                    const id = bar.dataset.id;
+                    const list = bar.querySelector(".emoji-list");
 
-    // =======================
-    // REALTIME REACTIONS
-    // =======================
-    document.querySelectorAll(".emoji-bar").forEach(bar=>{
+                    db.ref(`reactions/${id}`).on("value", snap => {
+                        const data = snap.val() || {};
+                        list.innerHTML = "";
 
-        const id = bar.dataset.id;
-        const list = bar.querySelector(".emoji-list");
+                        Object.keys(data).forEach(type => {
+                            const count = Object.keys(data[type] || {}).length;
+                            if (!count) return;
 
-        db.ref(`reactions/${id}`).on("value",(snap)=>{
+                            const emoji = emojiSet.find(e => e.key === type);
+                            if (!emoji) return;
 
-            const data = snap.val() || {};
-            list.innerHTML="";
+                            const span = document.createElement("span");
+                            span.dataset.type = type;
 
-            Object.keys(data).forEach(type=>{
-
-                const count = Object.keys(data[type]||{}).length;
-                if(!count) return;
-
-                const emoji = emojiSet.find(e=>e.key===type);
-                if(!emoji) return;
-
-                const span = document.createElement("span");
-                span.dataset.type = type;
-
-                span.innerHTML = `
+                            span.innerHTML = `
                     ${
                         emoji.url
-                        ? `<img src="${emoji.url}" style="width:16px;height:16px">`
-                        : emoji.icon
+                            ? `<img src="${emoji.url}" style="width:16px;height:16px">`
+                            : emoji.icon
                     }
                     <b>${count}</b>
                 `;
 
-                span.onclick = ()=>react(span,type);
+                            span.onclick = () => react(span, type);
 
-                list.appendChild(span);
-            });
+                            list.appendChild(span);
+                        });
+                    });
+                });
 
-        });
+                // =======================
+                // 🔥 REALTIME COMMENT COUNT
+                // =======================
+                document.querySelectorAll(".comment-btn").forEach(btn => {
+                    const id = btn.dataset.id;
+                    const countEl = btn.querySelector(".comment-count");
 
-    });
+                    db.ref(`comments/${id}`).on("value", snap => {
+                        const data = snap.val() || {};
+                        const total = Object.keys(data).length;
 
-
-    // =======================
-    // 🔥 REALTIME COMMENT COUNT
-    // =======================
-    document.querySelectorAll(".comment-btn").forEach(btn => {
-
-        const id = btn.dataset.id;
-        const countEl = btn.querySelector(".comment-count");
-
-        db.ref(`comments/${id}`).on("value",(snap)=>{
-
-            const data = snap.val() || {};
-            const total = Object.keys(data).length;
-
-            countEl.textContent = total;
-
-        });
-
-    });
-
-};
+                        countEl.textContent = total;
+                    });
+                });
+            };
         </script>
 
         <script>
