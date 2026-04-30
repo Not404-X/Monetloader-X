@@ -2,7 +2,7 @@
     "x64": [
         {
             "name": "Cmd Helper (all client",
-            "desc": "Monet cmd helper adalah monet untuk membantu kalian dalam menggunakan cmd tanpa harus ribet ngetik, tinggal pencet tombol aja. Cmd helper ini udah support di semua client",
+            "desc": "Monet cmd helper adalah monet untuk membantu kalian dalam menggunakan cmd tanpa harus ribet ngetik, tinggal pencet tombol aja. Cmd helper ini udah support di semua client * /ch untuk bukavmenu",
             "file": "https://sfl.gl/3jP4",
             "review": "https://youtu.be/Nl9PFKQsJ7s?si=A7dKDEY6l84yK-SW",
             "status": "new"
